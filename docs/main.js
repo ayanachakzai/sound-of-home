@@ -18,9 +18,25 @@ const revealGate = document.getElementById('reveal-gate');
 const revealSeam = revealGate.querySelector('.reveal-seam');
 const mastheadEl = document.querySelector('.masthead');
 const counterEl = document.querySelector('.counter');
+const mastheadDismissBtn = document.getElementById('masthead-dismiss');
+const mastheadTabBtn = document.getElementById('masthead-tab');
+const legendToggleBtn = document.getElementById('legend-toggle');
+const legendScrimEl = document.getElementById('legend-scrim');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const hasHover = window.matchMedia('(hover: hover)').matches;
 let tapTipTimer = null;
+
+// ── Mobile "tapestry" scroll space ───────────────────────────────────
+// On mobile the finished cloth is taller than one screen — mirrors get a
+// real, comfortable, fixed size and the page scrolls natively to explore
+// it, the same way the intro story already scrolls. Desktop is untouched:
+// canvasContentH stays equal to H and scrollY stays 0 there always.
+const MOBILE_CELL = 40; // px per mirror cell at native scroll, before font-load re-measure
+let canvasContentH = 0;
+let scrollY = 0;
+let mobileClothMode = false;
+const toContentY = (viewportY) => viewportY + scrollY;
+const toScreenY = (contentY) => contentY - scrollY;
 
 const K = 6;
 const STITCH_LEN = 14;
@@ -607,13 +623,58 @@ function prepare(data, simData) {
 // ── Layout ──────────────────────────────────────────────────────────
 function layoutGrid() {
 	const mobile = W < 720;
+	// Once the cloth is truly interactive, mobile gets its own fixed-size,
+	// scrollable "tapestry" layout instead of a shrunk-to-fit grid — 213
+	// legible, comfortably tappable mirrors need more height than any one
+	// phone screen has, so the page scrolls to it natively, the same way
+	// the intro story already does. During the intro/reveal preview (or on
+	// desktop, always) the grid still fits within a single viewport band.
+	mobileClothMode = mobile && !introActive && !revealActive;
+
+	if (mobileClothMode) {
+		const TOP_MARGIN = 96, BOTTOM_MARGIN = 120;
+		const fx0 = W * 0.07, fx1 = W * 0.93;
+		const fw = fx1 - fx0;
+		const n = mirrors.length;
+		const cell = MOBILE_CELL;
+		const cols = Math.max(1, Math.floor(fw / cell));
+		const rows = Math.ceil(n / cols);
+		const ox = fx0 + (fw - cols * cell) / 2;
+		canvasContentH = TOP_MARGIN + rows * cell + BOTTOM_MARGIN;
+
+		mirrors.forEach((m, i) => {
+			const row = Math.floor(i / cols);
+			let col = i % cols;
+			if (row % 2) col = cols - 1 - col;
+			const shift = (row % 2) * cell * 0.28;
+			m.x = ox + col * cell + cell / 2 + shift + (m.u - 0.5) * 3;
+			m.y = TOP_MARGIN + row * cell + cell / 2 + (hash(m.n + 'y') - 0.5) * 3;
+			m.r = cell * 0.2 + ((m.mir - 0.749) / 0.251) * cell * 0.06;
+			const hasScore = m.holders[0].score != null;
+			const sMax = hasScore ? m.holders[0].score : 0;
+			const sMin = hasScore ? m.holders[K - 1].score : 0;
+			m.holders.forEach((h, k) => {
+				const a = (k / K) * Math.PI * 2 + m.u * Math.PI + (hash(h.w.n + m.n) - 0.5) * 0.5;
+				const closeness = hasScore
+					? (sMax - h.score) / Math.max(sMax - sMin, 1e-9)
+					: k / (K - 1);
+				const rad = m.r + 3.5 + closeness * cell * 0.16;
+				h.x = m.x + Math.cos(a) * rad;
+				h.y = m.y + Math.sin(a) * rad;
+				h.ang = a + Math.PI / 2 + (hash(m.n + h.w.n) - 0.5) * 0.4;
+			});
+		});
+		return;
+	}
+
+	canvasContentH = H;
 	const fx0 = mobile ? W * 0.07 : W * 0.34;
 	const fx1 = mobile ? W * 0.93 : W * 0.965;
 	let fy0 = mobile ? H * 0.43 : H * 0.09;
 	let fy1 = mobile ? H * 0.79 : H * 0.93;
 	if (mobile) {
-		// The masthead and footer chrome are real text, not a fixed guess —
-		// measure where they actually end so the grid never sits under them.
+		// This preview band (intro/reveal only, before scrolling exists)
+		// still needs to dodge the masthead/footer chrome by measurement.
 		const PAD = 18;
 		const mastheadBottom = mastheadEl?.getBoundingClientRect().bottom;
 		const legendTop = legendEl?.getBoundingClientRect().top;
@@ -624,7 +685,6 @@ function layoutGrid() {
 			counterTop > 0 ? counterTop : H
 		);
 		if (footerTop < H) fy1 = footerTop - PAD;
-		// keep a sane minimum band even if the measurement comes back tight
 		if (fy1 - fy0 < H * 0.22) {
 			const mid = (fy0 + fy1) / 2;
 			fy0 = mid - H * 0.11;
@@ -665,30 +725,35 @@ function layoutGrid() {
 }
 
 // ── Cloth ground ────────────────────────────────────────────────────
-function drawCloth(g) {
+function drawCloth(g, targetH = H, includeVignette = true) {
 	g.fillStyle = '#1b1115';
-	g.fillRect(0, 0, W, H);
+	g.fillRect(0, 0, W, targetH);
 	g.strokeStyle = '#d8c2a8';
 	g.lineWidth = 1;
-	for (let y = 0.5; y < H; y += 3) {
+	for (let y = 0.5; y < targetH; y += 3) {
 		g.globalAlpha = 0.028 + hash('h' + y) * 0.03;
 		g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke();
 	}
 	for (let x = 0.5; x < W; x += 3) {
 		g.globalAlpha = 0.02 + hash('v' + x) * 0.026;
-		g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke();
+		g.beginPath(); g.moveTo(x, 0); g.lineTo(x, targetH); g.stroke();
 	}
 	g.globalAlpha = 1;
-	for (let i = 0; i < 900; i++) {
-		const x = hash('sx' + i) * W, y = hash('sy' + i) * H;
+	const speckCount = Math.round(900 * (targetH / H));
+	for (let i = 0; i < speckCount; i++) {
+		const x = hash('sx' + i) * W, y = hash('sy' + i) * targetH;
 		g.fillStyle = i % 3 ? 'rgba(0,0,0,0.2)' : 'rgba(220,195,160,0.05)';
 		g.fillRect(x, y, 1 + hash('sw' + i) * 2, 1);
 	}
-	const vig = g.createRadialGradient(W * 0.55, H * 0.5, H * 0.34, W * 0.5, H * 0.5, W * 0.62);
+	// A single centred vignette only reads correctly when the canvas is
+	// one screen tall. On the taller, scrollable mobile grid it's drawn
+	// live instead, framing whatever's actually in view (see frame()).
+	if (!includeVignette) return;
+	const vig = g.createRadialGradient(W * 0.55, targetH * 0.5, targetH * 0.34, W * 0.5, targetH * 0.5, W * 0.62);
 	vig.addColorStop(0, 'rgba(0,0,0,0)');
 	vig.addColorStop(1, 'rgba(6,2,4,0.42)');
 	g.fillStyle = vig;
-	g.fillRect(0, 0, W, H);
+	g.fillRect(0, 0, W, targetH);
 }
 
 // ── Marks ───────────────────────────────────────────────────────────
@@ -736,7 +801,7 @@ function drawHolder(g, h, alpha = 1) {
 }
 
 function drawPathStitch(g, ps) {
-	const x = ps.u * W, y = ps.v * H;
+	const x = ps.u * W, y = ps.v * canvasContentH;
 	g.save();
 	g.translate(x, y);
 	g.rotate(ps.ang);
@@ -753,10 +818,10 @@ function drawPathStitch(g, ps) {
 function rebuildBase() {
 	base = document.createElement('canvas');
 	base.width = W * DPR;
-	base.height = H * DPR;
+	base.height = canvasContentH * DPR;
 	const g = base.getContext('2d');
 	g.setTransform(DPR, 0, 0, DPR, 0, 0);
-	drawCloth(g);
+	drawCloth(g, canvasContentH, !mobileClothMode);
 	for (const ps of pathStitches) drawPathStitch(g, ps);
 	for (const m of mirrors) {
 		if (!m.sewn) {
@@ -800,9 +865,12 @@ function sewMirror(m, staggered) {
 }
 
 function layStitch(x, y, ang) {
-	pathStitches.push({ u: x / W, v: y / H, ang });
+	// x/y arrive viewport-relative from the pointer; stitches bake into the
+	// base canvas in content space so they stay put under later scrolling.
+	const cy = toContentY(y);
+	pathStitches.push({ u: x / W, v: cy / canvasContentH, ang });
 	drawPathStitch(baseCtx, pathStitches[pathStitches.length - 1]);
-	lastStitch = { x, y };
+	lastStitch = { x, y: cy };
 	mirrorCarry += MIRRORS_PER_STITCH;
 	while (mirrorCarry >= 1 && queue.length) {
 		mirrorCarry -= 1;
@@ -817,7 +885,7 @@ canvas.addEventListener('pointerdown', (e) => {
 	pointer.down = true;
 	pointer.x = e.clientX; pointer.y = e.clientY;
 	downAt = { x: e.clientX, y: e.clientY, moved: 0 };
-	if (!lastStitch) lastStitch = { x: e.clientX, y: e.clientY };
+	if (!lastStitch) lastStitch = { x: e.clientX, y: toContentY(e.clientY) };
 	carry = 0;
 	hovered = null;
 	tip.style.display = 'none';
@@ -847,9 +915,10 @@ window.addEventListener('pointerup', (e) => {
 	const wasDown = pointer.down;
 	pointer.down = false;
 	if (!wasDown || zoom || downAt.moved > 6) return;
+	const tapContentY = toContentY(e.clientY);
 	for (const m of mirrors) {
 		if (!m.sewn) continue;
-		const d = (m.x - e.clientX) ** 2 + (m.y - e.clientY) ** 2;
+		const d = (m.x - e.clientX) ** 2 + (m.y - tapContentY) ** 2;
 		if (d < (m.r + 6) ** 2) {
 			zoom = { m, t: 0, closing: false };
 			document.body.classList.add('zoom-mode');
@@ -872,12 +941,14 @@ window.addEventListener('keydown', (e) => {
 });
 
 function hover(x, y) {
+	// x/y arrive viewport-relative; mirrors/holders live in content space.
+	const cy = toContentY(y);
 	let best = null, bd = 100;
 	for (const m of mirrors) {
 		if (!m.sewn) continue;
 		for (const h of m.holders) {
 			if (!h.sewn) continue;
-			const d = (h.x - x) ** 2 + (h.y - y) ** 2;
+			const d = (h.x - x) ** 2 + (h.y - cy) ** 2;
 			if (d < bd) { bd = d; best = { kind: 'stitch', w: h.w, x: h.x, y: h.y }; }
 		}
 	}
@@ -885,7 +956,7 @@ function hover(x, y) {
 		let bm = 400;
 		for (const m of mirrors) {
 			if (!m.sewn) continue;
-			const d = (m.x - x) ** 2 + (m.y - y) ** 2;
+			const d = (m.x - x) ** 2 + (m.y - cy) ** 2;
 			if (d < Math.max((m.r + 4) ** 2, 1) && d < bm) { bm = d; best = { kind: 'mirror', m }; }
 		}
 	}
@@ -918,8 +989,9 @@ function hover(x, y) {
 	tip.style.left = left + 'px';
 
 	const half = th / 2;
-	const clearBelow = (mastheadEl?.getBoundingClientRect().bottom || 0) + half + margin;
-	const minY = Math.max(half + margin, clearBelow);
+	// Chrome is a small floating tab/pill now, not a flow-stacked block —
+	// a fixed corner clearance is enough rather than measuring it directly.
+	const minY = half + margin + (mobileClothMode ? 56 : 0);
 	const maxY = H - half - margin;
 	tip.style.top = Math.min(maxY, Math.max(minY, y)) + 'px';
 }
@@ -929,6 +1001,23 @@ finishBtn.addEventListener('click', () => {
 	autoTimer = setInterval(() => {
 		if (queue.length) sewMirror(queue.shift(), true);
 	}, 110);
+});
+
+// ── Mobile chrome: intro card ↔ tab, legend ↔ bottom sheet ──────────
+// The finished cloth gets the whole screen; the masthead is read once
+// and collapses to a small tab, the legend opens as a sheet on demand,
+// instead of either permanently eating into the grid's space.
+mastheadDismissBtn?.addEventListener('click', () => {
+	document.body.classList.add('masthead-closed');
+});
+mastheadTabBtn?.addEventListener('click', () => {
+	document.body.classList.remove('masthead-closed');
+});
+legendToggleBtn?.addEventListener('click', () => {
+	document.body.classList.add('legend-open');
+});
+legendScrimEl?.addEventListener('click', () => {
+	document.body.classList.remove('legend-open');
 });
 
 // ── Legend ──────────────────────────────────────────────────────────
@@ -1093,6 +1182,20 @@ function drawZoom() {
 }
 
 function drawLivingBase(source) {
+	if (mobileClothMode) {
+		// The base is taller than one screen — sample the window that's
+		// actually scrolled into view rather than squeezing the whole
+		// tapestry to fit (that breathing drift doesn't apply here).
+		const maxScroll = Math.max(0, canvasContentH - H);
+		const sy = Math.max(0, Math.min(maxScroll, scrollY));
+		ctx.drawImage(source, 0, sy * DPR, W * DPR, H * DPR, 0, 0, W, H);
+		const vig = ctx.createRadialGradient(W * 0.5, H * 0.42, H * 0.28, W * 0.5, H * 0.5, W * 0.75);
+		vig.addColorStop(0, 'rgba(0,0,0,0)');
+		vig.addColorStop(1, 'rgba(6,2,4,0.4)');
+		ctx.fillStyle = vig;
+		ctx.fillRect(0, 0, W, H);
+		return;
+	}
 	if (reducedMotion.matches) {
 		ctx.drawImage(source, 0, 0, W, H);
 		return;
@@ -1126,23 +1229,29 @@ function frame() {
 		return;
 	}
 
+	if (mobileClothMode) scrollY = window.scrollY;
 	ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 	// behind an open zoom, the cloth falls out of focus
 	if (zoom) ctx.filter = `blur(${(zoom.t * 5).toFixed(1)}px)`;
 	drawLivingBase(base);
 	ctx.filter = 'none';
 
+	// Everything below is drawn live each frame at content-space positions
+	// (mirrors, holders, glints) — toScreenY re-anchors them under the
+	// current scroll. It's a no-op (scrollY is always 0) outside the
+	// mobile scrollable-tapestry mode.
 	for (let i = glints.length - 1; i >= 0; i--) {
 		const gl = glints[i];
 		gl.ttl -= 1 / 60;
 		if (gl.ttl <= 0) { glints.splice(i, 1); continue; }
 		const k = gl.ttl / gl.max;
 		const r = (gl.big ? 15 : 7) * (1 - k * 0.4);
-		const grad = ctx.createRadialGradient(gl.x, gl.y, 0, gl.x, gl.y, r);
+		const gy = toScreenY(gl.y);
+		const grad = ctx.createRadialGradient(gl.x, gy, 0, gl.x, gy, r);
 		grad.addColorStop(0, `rgba(255,244,214,${0.45 * k})`);
 		grad.addColorStop(1, 'rgba(255,244,214,0)');
 		ctx.fillStyle = grad;
-		ctx.beginPath(); ctx.arc(gl.x, gl.y, r, 0, Math.PI * 2); ctx.fill();
+		ctx.beginPath(); ctx.arc(gl.x, gy, r, 0, Math.PI * 2); ctx.fill();
 	}
 
 	if (zoom) {
@@ -1155,36 +1264,39 @@ function frame() {
 		ctx.lineCap = 'round';
 		if (hovered.kind === 'mirror') {
 			const m = hovered.m;
+			const my0 = toScreenY(m.y);
 			ctx.strokeStyle = 'rgba(213,174,90,0.95)';
 			ctx.lineWidth = 1.4;
-			ctx.beginPath(); ctx.arc(m.x, m.y, m.r + 4, 0, Math.PI * 2); ctx.stroke();
+			ctx.beginPath(); ctx.arc(m.x, my0, m.r + 4, 0, Math.PI * 2); ctx.stroke();
 			for (const h of m.holders) {
 				if (!h.sewn) continue;
 				ctx.strokeStyle = 'rgba(233,223,199,0.85)';
 				ctx.lineWidth = 1.1;
-				ctx.beginPath(); ctx.arc(h.x, h.y, 6.5, 0, Math.PI * 2); ctx.stroke();
+				ctx.beginPath(); ctx.arc(h.x, toScreenY(h.y), 6.5, 0, Math.PI * 2); ctx.stroke();
 			}
 		} else {
 			const w = hovered.w;
+			const hx = hovered.x, hy = toScreenY(hovered.y);
 			for (const p of w.placements) {
 				if (!p.sewn || (p.x === hovered.x && p.y === hovered.y)) continue;
-				const mx = (hovered.x + p.x) / 2, my = (hovered.y + p.y) / 2;
-				const sag = Math.min(24, Math.hypot(p.x - hovered.x, p.y - hovered.y) * 0.09);
+				const py = toScreenY(p.y);
+				const mx = (hx + p.x) / 2, my = (hy + py) / 2;
+				const sag = Math.min(24, Math.hypot(p.x - hx, py - hy) * 0.09);
 				ctx.strokeStyle = 'rgba(0,0,0,0.4)';
 				ctx.lineWidth = 2.4;
-				ctx.beginPath(); ctx.moveTo(hovered.x, hovered.y);
-				ctx.quadraticCurveTo(mx, my + sag, p.x, p.y); ctx.stroke();
+				ctx.beginPath(); ctx.moveTo(hx, hy);
+				ctx.quadraticCurveTo(mx, my + sag, p.x, py); ctx.stroke();
 				ctx.strokeStyle = 'rgba(213,174,90,0.85)';
 				ctx.lineWidth = 1.3;
-				ctx.beginPath(); ctx.moveTo(hovered.x, hovered.y);
-				ctx.quadraticCurveTo(mx, my + sag, p.x, p.y); ctx.stroke();
+				ctx.beginPath(); ctx.moveTo(hx, hy);
+				ctx.quadraticCurveTo(mx, my + sag, p.x, py); ctx.stroke();
 				ctx.strokeStyle = 'rgba(233,223,199,0.8)';
 				ctx.lineWidth = 1;
-				ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2); ctx.stroke();
+				ctx.beginPath(); ctx.arc(p.x, py, 6, 0, Math.PI * 2); ctx.stroke();
 			}
 			ctx.strokeStyle = 'rgba(213,174,90,0.95)';
 			ctx.lineWidth = 1.4;
-			ctx.beginPath(); ctx.arc(hovered.x, hovered.y, 8, 0, Math.PI * 2); ctx.stroke();
+			ctx.beginPath(); ctx.arc(hx, hy, 8, 0, Math.PI * 2); ctx.stroke();
 		}
 	}
 
@@ -1193,14 +1305,15 @@ function frame() {
 	// never freeze at a stale last-touched point.
 	const showNeedle = pointer.x > 0 && (hasHover || pointer.down);
 	if (lastStitch && !done && showNeedle) {
+		const lsy = toScreenY(lastStitch.y);
 		const ex = pointer.x - Math.cos(pointer.ang) * 22;
 		const ey = pointer.y - Math.sin(pointer.ang) * 22;
-		const mx = (lastStitch.x + ex) / 2, my = (lastStitch.y + ey) / 2;
-		const sag = Math.min(30, Math.hypot(ex - lastStitch.x, ey - lastStitch.y) * 0.12);
+		const mx = (lastStitch.x + ex) / 2, my = (lsy + ey) / 2;
+		const sag = Math.min(30, Math.hypot(ex - lastStitch.x, ey - lsy) * 0.12);
 		ctx.strokeStyle = 'rgba(201,162,75,0.8)';
 		ctx.lineWidth = 1.2;
 		ctx.beginPath();
-		ctx.moveTo(lastStitch.x, lastStitch.y);
+		ctx.moveTo(lastStitch.x, lsy);
 		ctx.quadraticCurveTo(mx, my + sag, ex, ey);
 		ctx.stroke();
 	}
@@ -1231,6 +1344,9 @@ function resize() {
 	canvas.width = W * DPR; canvas.height = H * DPR;
 	canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
 	layoutGrid();
+	document.getElementById('cloth-spacer').style.height =
+		mobileClothMode ? canvasContentH + 'px' : '0px';
+	document.body.classList.toggle('mobile-cloth', mobileClothMode);
 	bgBase = document.createElement('canvas');
 	bgBase.width = W * DPR;
 	bgBase.height = H * DPR;

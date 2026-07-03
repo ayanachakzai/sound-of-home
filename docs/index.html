@@ -38,6 +38,7 @@
 		position: fixed; inset: 0; cursor: none; touch-action: none;
 		transition: filter 1.5s var(--ease-thread), transform 1.5s var(--ease-thread);
 	}
+	#cloth-spacer { width: 1px; height: 0; pointer-events: none; }
 	.masthead {
 		position: fixed; top: 44px; left: 52px; width: min(410px, calc(100vw - 104px));
 		padding: 0;
@@ -90,6 +91,11 @@
 	#legend .li i {
 		width: 12px; height: 2px; border-radius: 1px; display: inline-block;
 	}
+	/* Mobile-only chrome — hidden by default; the mobile-cloth media query
+	   below is the only place that ever turns these on, but the "off"
+	   state has to hold outside the media query too, or a desktop viewport
+	   would render them as bare, unstyled buttons. */
+	#masthead-dismiss, #masthead-tab, #legend-toggle, #legend-scrim { display: none; }
 
 	/* ── scroll story ──────────────────────────────────────────── */
 	body.intro-mode { height: auto; min-height: 100%; overflow: visible; overflow-x: clip; }
@@ -267,10 +273,10 @@
 	#reveal-gate.complete .reveal-instruction::after { content: ' · the cloth is opening'; }
 
 	@media (max-width: 720px) {
-		.masthead { top: 22px; left: 22px; width: calc(100vw - 44px); padding: 0; }
-		.masthead h1 { font-size: clamp(35px, 10vw, 46px); line-height: 1.32; }
-		.masthead .sub { font-size: 16px; line-height: 1.55; }
-		#process { font-size: 15px; line-height: 1.55; }
+		body.mobile-cloth {
+			height: auto; min-height: 100%; overflow: visible; overflow-x: clip;
+			-webkit-overflow-scrolling: touch;
+		}
 		#story section { min-height: 112svh; padding: 0 22px; max-width: none; }
 		#story section:last-child { min-height: 145svh; padding-top: 34vh; }
 		#story section.story-interlude { min-height: 390svh; padding: 0; }
@@ -284,16 +290,87 @@
 		.ibody { font-size: 17px; line-height: 1.62; max-width: 36ch; }
 		#storybar { padding: 14px 18px 18px; gap: 12px; }
 		#iskip { display: none; }
-		#legend {
-			left: 18px; right: 18px; bottom: 52px; width: auto; max-width: none;
-			display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0;
-		}
-		#legend .li { flex: 0 0 auto; font-size: 11px; }
-		.counter { left: 20px; bottom: 20px; }
 		.reveal-card { padding: 38px 24px; }
 		.reveal-card h2 { font-size: clamp(42px, 12vw, 62px); line-height: 1.25; }
 		.reveal-copy { font-size: 17px; line-height: 1.55; }
 		#zoomhint { top: 22px; right: 22px; font-size: 11px; }
+
+		/* ── mobile cloth chrome: overlays, not flow-stacked UI ─────── */
+		body.mobile-cloth .masthead {
+			inset: 0; top: 0; left: 0; width: 100%; height: 100%;
+			display: grid; place-items: center; padding: 15vh 26px 12vh;
+			background: rgba(10, 5, 7, 0.86); backdrop-filter: blur(6px);
+			-webkit-backdrop-filter: blur(6px);
+			pointer-events: auto; text-align: center;
+			transition: opacity 0.6s var(--ease-thread), visibility 0s linear 0s;
+		}
+		body.mobile-cloth .masthead > * { max-width: 340px; margin-inline: auto; }
+		body.mobile-cloth .masthead h1 { font-size: clamp(38px, 11vw, 50px); line-height: 1.28; }
+		body.mobile-cloth .masthead .sub { font-size: 16.5px; line-height: 1.6; }
+		body.mobile-cloth .masthead .urdu { justify-content: center; }
+		body.mobile-cloth #process { pointer-events: auto; }
+		body.mobile-cloth #masthead-dismiss {
+			display: block; margin: 22px auto 0; pointer-events: auto;
+			background: none; border: 1px solid rgba(201,162,75,.55); color: var(--gold);
+			font: 600 13px/1 var(--font-note); letter-spacing: .13em; text-transform: uppercase;
+			padding: 13px 22px; border-radius: 99px;
+		}
+		body.mobile-cloth.masthead-closed .masthead {
+			opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+		}
+		#masthead-tab {
+			display: none; position: fixed; top: 18px; left: 18px; z-index: 8;
+			width: 44px; height: 44px; border-radius: 50%; place-items: center;
+			background: rgba(20,11,14,.72); border: 1px solid rgba(201,162,75,.4);
+			color: var(--gold); font: 400 20px/1 var(--font-hand);
+			backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		}
+		body.mobile-cloth.masthead-closed #masthead-tab { display: grid; }
+
+		body.mobile-cloth #legend {
+			position: fixed; inset: auto 0 0 0; left: 0; right: 0; bottom: 0; width: 100%;
+			max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+			display: flex; flex-wrap: wrap; gap: 10px 20px; align-content: flex-start;
+			background: rgba(14,8,10,.97); border-top: 1px solid rgba(201,162,75,.28);
+			padding: 20px 22px calc(22px + env(safe-area-inset-bottom, 0px));
+			transform: translateY(100%); transition: transform 0.42s var(--ease-thread);
+			z-index: 9;
+		}
+		body.legend-open #legend { transform: translateY(0); }
+		body.mobile-cloth #legend .li { font-size: 14px; }
+		body.mobile-cloth #legend .li i { width: 14px; height: 3px; }
+		#legend-scrim {
+			display: none; position: fixed; inset: 0; z-index: 8; pointer-events: none;
+			background: rgba(6,3,4,.5); opacity: 0; transition: opacity 0.42s ease;
+		}
+		body.mobile-cloth #legend-scrim { display: block; }
+		body.legend-open #legend-scrim { opacity: 1; pointer-events: auto; }
+		#legend-toggle {
+			display: none; position: fixed; right: 18px; bottom: 18px; z-index: 8;
+			background: rgba(20,11,14,.72); border: 1px solid rgba(201,162,75,.4);
+			color: var(--gold); border-radius: 99px; padding: 11px 18px;
+			font: 600 12px/1 var(--font-note); letter-spacing: .1em; text-transform: uppercase;
+			align-items: center; gap: 8px;
+			backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+		}
+		#legend-toggle .dots { display: flex; }
+		#legend-toggle .dots i { width: 8px; height: 8px; border-radius: 50%; margin-left: -3px; border: 1px solid rgba(10,5,7,.5); }
+		body.mobile-cloth #legend-toggle { display: flex; }
+		body.legend-open #legend-toggle { display: none; }
+
+		body.mobile-cloth .counter {
+			position: fixed; left: 18px; bottom: 18px; z-index: 8;
+			background: rgba(20,11,14,.72); border: 1px solid rgba(201,162,75,.28);
+			border-radius: 99px; padding: 11px 16px; font-size: 12px;
+			backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+			display: flex; align-items: center; gap: 10px;
+		}
+		body.mobile-cloth #finish {
+			position: static; padding: 0; border: none; font-size: 12px;
+			border-bottom: 1px solid rgba(201,162,75,.6);
+		}
+		body.zoom-mode.mobile-cloth .counter,
+		body.zoom-mode.mobile-cloth #legend-toggle { opacity: 0; visibility: hidden; pointer-events: none; }
 	}
 	@media (prefers-reduced-motion: reduce) {
 		*, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
@@ -304,20 +381,30 @@
 <body class="intro-mode">
 	<canvas id="cloth"></canvas>
 	<header class="masthead">
-		<p class="kicker">Doch · Balochi embroidery</p>
-		<h1>Stitch the sound&nbsp;of&nbsp;home</h1>
-		<p class="urdu" lang="ur">دوچ، گھر کی آواز</p>
-		<p class="sub" id="hint">In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. The surrounding stitches are songs from elsewhere that sound close to it. Press the cloth and pull the thread to begin.</p>
-		<details id="process">
-			<summary>the process</summary>
-			<p>I gathered 213 Balochi songs from family playlists, friends and Spotify, then placed them beside 2,269 songs from 14 genres. Energy, acousticness, mood and tempo give each track a place in a shared sound space. For every Balochi song, the six nearest tracks become the stitches around its mirror. The closer the sound, the more tightly the stitch sits.</p>
-		</details>
+		<div>
+			<p class="kicker">Doch · Balochi embroidery</p>
+			<h1>Stitch the sound&nbsp;of&nbsp;home</h1>
+			<p class="urdu" lang="ur">دوچ، گھر کی آواز</p>
+			<p class="sub" id="hint">In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. The surrounding stitches are songs from elsewhere that sound close to it. Press the cloth and pull the thread to begin.</p>
+			<details id="process">
+				<summary>the process</summary>
+				<p>I gathered 213 Balochi songs from family playlists, friends and Spotify, then placed them beside 2,269 songs from 14 genres. Energy, acousticness, mood and tempo give each track a place in a shared sound space. For every Balochi song, the six nearest tracks become the stitches around its mirror. The closer the sound, the more tightly the stitch sits.</p>
+			</details>
+			<button id="masthead-dismiss">Begin stitching ↓</button>
+		</div>
 	</header>
+	<button id="masthead-tab" aria-label="Show introduction">دو</button>
 	<p class="counter"><b id="sewn">0</b> of 213 mirrors held</p>
 	<button id="finish">Let it finish itself</button>
+	<div id="legend-scrim"></div>
 	<div id="legend"></div>
+	<button id="legend-toggle" aria-label="Show genre legend">
+		<span class="dots"><i style="background:#c33b2e"></i><i style="background:#c9a24b"></i><i style="background:#3d8a67"></i></span>
+		Legend
+	</button>
 	<div id="tip"><div class="n"></div><div class="g"></div><div class="g s"></div></div>
 	<p id="zoomhint">click anywhere to close</p>
+	<div id="cloth-spacer" aria-hidden="true"></div>
 	<div id="reveal-gate" aria-hidden="true">
 		<div class="reveal-card">
 			<p class="reveal-kicker">the tracing is complete</p>
@@ -339,6 +426,6 @@
 		<button id="iskip">skip to the cloth →</button>
 	</div>
 
-	<script src="main.js?v=14"></script>
+	<script src="main.js?v=15"></script>
 </body>
 </html>
