@@ -16,7 +16,11 @@ const tipGenre = tip.querySelector('.g');
 const tipSim = tip.querySelector('.s');
 const revealGate = document.getElementById('reveal-gate');
 const revealSeam = revealGate.querySelector('.reveal-seam');
+const mastheadEl = document.querySelector('.masthead');
+const counterEl = document.querySelector('.counter');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const hasHover = window.matchMedia('(hover: hover)').matches;
+let tapTipTimer = null;
 
 const K = 6;
 const STITCH_LEN = 14;
@@ -519,6 +523,9 @@ function openDataset() {
 		revealGate.classList.remove('active', 'opening', 'complete');
 		revealGate.setAttribute('aria-hidden', 'true');
 		document.body.classList.remove('reveal-mode', 'reveal-opening');
+		// Masthead/legend are now untransformed and at their true resting
+		// size — re-measure the grid band against their real position.
+		resize();
 		// The first mirror catches the light as the now-interactive cloth settles.
 		setTimeout(() => { if (queue.length) sewMirror(queue.shift(), true); }, 420);
 	}, 1700);
@@ -602,8 +609,28 @@ function layoutGrid() {
 	const mobile = W < 720;
 	const fx0 = mobile ? W * 0.07 : W * 0.34;
 	const fx1 = mobile ? W * 0.93 : W * 0.965;
-	const fy0 = mobile ? H * 0.43 : H * 0.09;
-	const fy1 = mobile ? H * 0.79 : H * 0.93;
+	let fy0 = mobile ? H * 0.43 : H * 0.09;
+	let fy1 = mobile ? H * 0.79 : H * 0.93;
+	if (mobile) {
+		// The masthead and footer chrome are real text, not a fixed guess —
+		// measure where they actually end so the grid never sits under them.
+		const PAD = 18;
+		const mastheadBottom = mastheadEl?.getBoundingClientRect().bottom;
+		const legendTop = legendEl?.getBoundingClientRect().top;
+		const counterTop = counterEl?.getBoundingClientRect().top;
+		if (mastheadBottom > 0 && mastheadBottom < H) fy0 = mastheadBottom + PAD;
+		const footerTop = Math.min(
+			legendTop > 0 ? legendTop : H,
+			counterTop > 0 ? counterTop : H
+		);
+		if (footerTop < H) fy1 = footerTop - PAD;
+		// keep a sane minimum band even if the measurement comes back tight
+		if (fy1 - fy0 < H * 0.22) {
+			const mid = (fy0 + fy1) / 2;
+			fy0 = mid - H * 0.11;
+			fy1 = mid + H * 0.11;
+		}
+	}
 	const fw = fx1 - fx0, fh = fy1 - fy0;
 	const n = mirrors.length;
 	const cols = Math.ceil(Math.sqrt((n * fw) / fh));
@@ -832,6 +859,13 @@ window.addEventListener('pointerup', (e) => {
 			return;
 		}
 	}
+	// On a touch device a tap never hovers, so a stitch's info would
+	// otherwise be permanently unreachable — show it briefly on tap instead.
+	if (!hasHover) {
+		hover(e.clientX, e.clientY);
+		clearTimeout(tapTipTimer);
+		if (hovered) tapTipTimer = setTimeout(() => { hovered = null; tip.style.display = 'none'; }, 3800);
+	}
 });
 window.addEventListener('keydown', (e) => {
 	if (e.key === 'Escape' && zoom) zoom.closing = true;
@@ -871,8 +905,23 @@ function hover(x, y) {
 			(best.w === closestOverall ? 'the world’s closest sound to Balochistan · ' : '') +
 			`holds ${held} mirror${held === 1 ? '' : 's'}`;
 	}
-	tip.style.left = x + 'px'; tip.style.top = y + 'px';
 	tip.style.display = 'block';
+	// Position from the real rendered size, not the anchor point alone —
+	// content wraps to a variable number of lines, so width/height aren't
+	// known until after layout. Clamp fully in JS rather than leaning on a
+	// CSS transform flip, which can just as easily push it off the other edge.
+	const gap = 16, margin = 12;
+	const tw = tip.offsetWidth, th = tip.offsetHeight;
+	let left = x + gap;
+	if (left + tw > W - margin) left = x - gap - tw;
+	left = Math.max(margin, Math.min(W - tw - margin, left));
+	tip.style.left = left + 'px';
+
+	const half = th / 2;
+	const clearBelow = (mastheadEl?.getBoundingClientRect().bottom || 0) + half + margin;
+	const minY = Math.max(half + margin, clearBelow);
+	const maxY = H - half - margin;
+	tip.style.top = Math.min(maxY, Math.max(minY, y)) + 'px';
 }
 
 finishBtn.addEventListener('click', () => {
@@ -1139,7 +1188,11 @@ function frame() {
 		}
 	}
 
-	if (lastStitch && !done && pointer.x > 0) {
+	// Touch devices have no persistent hover — only draw the trailing thread
+	// and needle while a finger (or mouse) is genuinely in contact, so they
+	// never freeze at a stale last-touched point.
+	const showNeedle = pointer.x > 0 && (hasHover || pointer.down);
+	if (lastStitch && !done && showNeedle) {
 		const ex = pointer.x - Math.cos(pointer.ang) * 22;
 		const ey = pointer.y - Math.sin(pointer.ang) * 22;
 		const mx = (lastStitch.x + ex) / 2, my = (lastStitch.y + ey) / 2;
@@ -1151,7 +1204,7 @@ function frame() {
 		ctx.quadraticCurveTo(mx, my + sag, ex, ey);
 		ctx.stroke();
 	}
-	if (pointer.x > 0) {
+	if (showNeedle) {
 		ctx.save();
 		ctx.translate(pointer.x, pointer.y);
 		ctx.rotate(pointer.ang);
