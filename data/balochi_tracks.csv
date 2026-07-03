@@ -1,0 +1,214 @@
+track_name,genre,acousticness,danceability,energy,instrumentalness,key,liveness,loudness,mode,speechiness,tempo,valence
+Be To Mana Zehir K - Arif Baloch,balochi_folk,0.447,0.826,0.677,1.78e-06,6,0.232,-9.74,1,0.07,114.064,0.969
+Tai Ishqa Ma - Noor Khan Bazinjo,balochi_folk,0.166,0.556,0.668,0.0,11,0.127,-9.054,0,0.0662,116.112,0.959
+Laila O Laila - Rostam Mirlashari,balochi_folk,0.25,0.381,0.697,0.0,5,0.221,-10.69,1,0.119,158.952,0.961
+Arze Kana'n - Naeem Dilpul,balochi_folk,0.386,0.687,0.651,0.000465,8,0.363,-6.319,1,0.0243,100.004,0.688
+Washmallay - Komal Rizvi,balochi_folk,0.48,0.497,0.81,1.74e-05,7,0.0759,-7.552,1,0.151,109.349,0.895
+Shanko Tai Washe Malaga - Arif Baloch,balochi_folk,0.466,0.605,0.639,0.0,8,0.134,-9.478,1,0.0754,112.129,0.958
+Kora Rwane Sela - Arif Baloch,balochi_folk,0.32,0.705,0.521,9.79e-06,6,0.0962,-9.503,1,0.0337,89.701,0.887
+Halo Halo Kane - Arif Baloch,balochi_folk,0.586,0.638,0.664,0.0,0,0.0702,-7.898,0,0.045,158.557,0.911
+Omani Jaani - Golbang,balochi_folk,0.0277,0.528,0.611,0.00278,2,0.114,-9.762,1,0.051,123.522,0.578
+Jane Shouki - Golbang,balochi_folk,0.142,0.646,0.691,0.0,5,0.024,-7.978,1,0.116,175.137,0.735
+Morid - Golbang,balochi_folk,0.953,0.292,0.162,3.83e-06,5,0.104,-13.553,1,0.0409,69.027,0.468
+Biya Mani Bali Kapoot - Arif Baloch,balochi_folk,0.663,0.673,0.823,0.00331,10,0.17,-2.623,0,0.0466,138.039,0.884
+Deer E Biya Tara - Arif Baloch,balochi_folk,0.612,0.375,0.943,0.000232,10,0.326,0.63,1,0.0495,89.131,0.877
+Begind Qismata Mani - Arif Baloch,balochi_folk,0.693,0.542,0.735,9.49e-06,0,0.0951,-2.883,1,0.0581,129.038,0.942
+Kuja Rawane Salok - Abdo Al Baloshi,balochi_folk,0.415,0.465,0.533,0.0,9,0.327,-11.609,0,0.0359,117.743,0.841
+Allha Mana Murgi Ka - Abdo Al Baloshi,balochi_folk,0.406,0.508,0.67,0.0,0,0.168,-7.195,0,0.0352,104.035,0.925
+Shara May Dil - Noor Khan Bazinjo,balochi_folk,0.0604,0.87,0.588,0.0,8,0.138,-8.502,1,0.0446,96.131,0.904
+Baali Guraab - Kaifi Khalil,balochi_folk,0.778,0.716,0.456,0.00012,5,0.104,-10.548,1,0.0419,144.956,0.837
+Koohani Taha - Vahid Farzaneh,balochi_folk,0.376,0.725,0.842,1.14e-05,0,0.392,-3.469,1,0.0639,142.517,0.949
+Jee Mani Dost - Arif Baloch,balochi_folk,0.644,0.539,0.498,0.0,8,0.0683,-10.978,0,0.107,105.111,0.883
+Sardar Mani Salonk - Arif Baloch,balochi_folk,0.77,0.644,0.62,1.07e-06,0,0.178,-8.311,1,0.0313,154.036,0.96
+Kana Yaari - Eva B,balochi_folk,0.103,0.841,0.536,0.0,10,0.185,-6.866,0,0.118,96.013,0.582
+Waab O Hayal (Slowed and Reverb) - Balo Baloch,balochi_folk,0.562,0.677,0.512,0.000196,1,0.282,-10.687,0,0.0713,126.144,0.439
+Waab O Hayal - Balo Baloch,balochi_folk,0.488,0.731,0.602,2.75e-05,5,0.0863,-7.23,1,0.0486,135.058,0.591
+Shuthy Chamma Boro - Kaifi Khalil,balochi_folk,0.897,0.359,0.168,2.41e-06,1,0.106,-14.618,0,0.0346,87.377,0.111
+Showanag - Kaifi Khalil,balochi_folk,0.733,0.559,0.508,8.24e-05,10,0.143,-9.042,1,0.038,109.642,0.353
+Nazul (Mashup) - Kaifi Khalil,balochi_folk,0.561,0.767,0.533,0.000308,6,0.103,-9.688,0,0.0456,139.994,0.726
+Tauba Tauba - Kaifi Khalil,balochi_folk,0.444,0.777,0.599,0.00521,6,0.0999,-8.25,1,0.0531,142.483,0.689
+Washia Baa - Sabir Ali Baloch,balochi_folk,0.505,0.509,0.85,4.15e-06,10,0.201,-6.008,1,0.0467,119.036,0.971
+Bia O Morid - Rostam Mirlashari,balochi_folk,0.797,0.212,0.392,2.67e-06,5,0.125,-9.336,1,0.0307,88.667,0.394
+Pada Nodan - Noor Khan Bazinjo,balochi_folk,0.19,0.531,0.718,1.49e-05,6,0.0804,-8.968,1,0.0457,114.153,0.968
+Chaap Jana Sothe Man Gushaan Balochi Song - Azeem Shah,balochi_folk,0.112,0.402,0.925,0.00251,9,0.345,-1.693,0,0.0466,89.973,0.872
+Baluch Salonk - Rahima,balochi_folk,0.612,0.427,0.39,0.0159,9,0.497,-14.182,0,0.0818,117.201,0.755
+Mani Sabza Mana Yala - Noor Khan Bazinjo,balochi_folk,0.319,0.568,0.559,3.51e-05,1,0.101,-11.994,1,0.0398,110.235,0.962
+Allah Mani Barag - Baloochestan - Rastak,balochi_folk,0.159,0.367,0.732,0.0038,10,0.0518,-6.876,1,0.0402,100.134,0.963
+Mal Mani Sae Lonk - Samina Kanwal,balochi_folk,0.607,0.369,0.8,0.155,3,0.0675,-9.773,1,0.0473,181.634,0.84
+Mani Salook Kasan Sali - Sabir Ali Baloch,balochi_folk,0.577,0.474,0.813,1.28e-05,3,0.135,-6.383,1,0.0424,111.411,0.964
+Balochistan Bar o Baag - Wahab Baloch,balochi_folk,0.925,0.271,0.372,7.47e-06,5,0.354,-8.931,1,0.0372,152.793,0.847
+Afsos - Kaifi Khalil,balochi_folk,0.944,0.718,0.169,0.0,6,0.0998,-14.096,1,0.05,83.939,0.565
+Djadou - Saeid Shanbehzadeh,balochi_folk,0.857,0.627,0.313,0.000156,9,0.122,-14.843,1,0.363,122.841,0.12
+Mani Hala X Kaise Hua - Pari Zafar,balochi_folk,0.788,0.654,0.468,0.0,0,0.13,-9.081,0,0.0493,140.058,0.424
+Mana Nele - من نیله - Sima Bina,balochi_folk,0.302,0.682,0.571,0.0,7,0.222,-8.26,1,0.0361,119.921,0.872
+Biya Ke Mana - Noor Khan Bazinjo,balochi_folk,0.128,0.902,0.572,0.0,6,0.0872,-9.781,1,0.0461,126.137,0.964
+Incho Makan Bezar - Noor Khan Bazinjo,balochi_folk,0.15,0.482,0.737,3.03e-06,8,0.246,-8.299,1,0.0488,165.22,0.923
+Mani Dosta - Abdul Ghani Irani,balochi_folk,0.75,0.598,0.25,0.0,1,0.616,-16.78,1,0.0731,116.069,0.764
+Dil Man Data Chagel Lal - Arif Baloch,balochi_folk,0.483,0.71,0.627,0.0,6,0.157,-11.0,1,0.036,156.135,0.965
+Ma Mani Bonjaye Hayalani - Arif Baloch,balochi_folk,0.573,0.571,0.848,2.45e-05,0,0.298,-1.913,1,0.0338,143.834,0.852
+Marchi Thai Deedaar - Arif Baloch,balochi_folk,0.144,0.68,0.692,3.15e-06,6,0.066,-9.053,1,0.0416,83.515,0.97
+Kamo Kamo Habar - Muslim Hammal,balochi_folk,0.547,0.75,0.881,8.94e-06,8,0.0419,-5.323,1,0.0443,113.16,0.963
+Mast - Kaifi Khalil,balochi_folk,0.551,0.619,0.516,0.000368,4,0.158,-12.616,1,0.0393,131.892,0.445
+Jungle Jungle - Kaifi Khalil,balochi_folk,0.274,0.364,0.52,5.34e-05,9,0.0988,-11.951,1,0.0473,82.942,0.583
+Daanah Pah Daanah - Akhtar Chanal Zehri,balochi_folk,0.541,0.453,0.714,2.81e-06,11,0.0739,-10.02,1,0.0912,172.545,0.631
+Shap Ka Yataani Ma Para - Arif Baloch,balochi_folk,0.189,0.477,0.823,0.0,6,0.111,-8.476,1,0.064,172.0,0.832
+Kuja Rawanein - Gulein Banor,balochi_folk,0.168,0.61,0.704,3.08e-05,4,0.0867,-8.223,0,0.037,139.862,0.73
+Jene Dastan Man Makan - Arif Baloch,balochi_folk,0.735,0.462,0.856,0.153,11,0.478,-11.963,1,0.0479,103.239,0.694
+Bulbula Par Yat - Arif Baloch,balochi_folk,0.523,0.409,0.93,0.00753,0,0.301,-2.378,1,0.0402,158.825,0.937
+Inna Binna - Arif Baloch,balochi_folk,0.397,0.747,0.875,0.114,6,0.266,-3.509,1,0.043,107.991,0.962
+Biya Biya Mani Dost - Arif Baloch,balochi_folk,0.476,0.387,0.926,0.0935,6,0.439,-2.122,0,0.0884,91.988,0.903
+To Daratke Metaga - Kamran Dad,balochi_folk,0.809,0.722,0.399,0.00287,6,0.0864,-9.82,1,0.0985,146.706,0.961
+Sammi Tee - Abdulrahman Surizehi,balochi_folk,0.345,0.541,0.531,0.735,9,0.0962,-12.44,1,0.0522,128.325,0.402
+Tai Chamme - Yasir Jamal,balochi_folk,0.419,0.798,0.322,0.0,6,0.0713,-16.82,1,0.0465,119.619,0.919
+Delbaar - Abdulrahman Surizehi,balochi_folk,0.649,0.332,0.559,0.00166,4,0.169,-13.232,1,0.038,88.596,0.845
+Daagh E Daatha - Kaifi Khalil,balochi_folk,0.534,0.639,0.839,7.04e-06,6,0.0985,-2.827,1,0.0319,141.056,0.64
+Masqate Mehrk - Faiz Muhammad Baloch,balochi_folk,0.302,0.694,0.444,0.0273,6,0.109,-13.516,1,0.218,115.313,0.917
+Narmak Narmak - Mehdi Farukh,balochi_folk,0.446,0.576,0.904,3.35e-06,8,0.0879,-5.195,1,0.0733,112.03,0.619
+Sare Falak Ray Nazan - Mehdi Farukh,balochi_folk,0.271,0.702,0.908,1.83e-05,8,0.0946,-6.486,1,0.266,130.097,0.721
+Qad Mi O Kaif - Arif Baloch,balochi_folk,0.135,0.544,0.744,0.0,8,0.0709,-8.603,0,0.201,209.421,0.903
+Agea Ma E Pada - Noor Khan Bazinjo,balochi_folk,0.375,0.475,0.653,8.28e-05,6,0.141,-9.825,1,0.0739,154.131,0.912
+Mani Gowandal Kasane - Saraton Naz,balochi_folk,0.666,0.513,0.89,0.0809,11,0.38,-1.902,1,0.168,89.677,0.766
+Dhihi Zeymor - Abdulrahman Surizehi,balochi_folk,0.747,0.639,0.531,0.901,6,0.0591,-15.158,1,0.0631,138.628,0.487
+Wat Wati Jende Sezawaren Dila Chun Kane - Minhaj Mukhtar,balochi_folk,0.657,0.796,0.67,0.228,4,0.122,-10.55,0,0.0497,130.123,0.903
+Aa Monj Shikaar'en - Rakae Jamil,balochi_folk,0.695,0.732,0.49,0.0,8,0.106,-8.491,1,0.0492,75.039,0.775
+CHILIMMI 3 TABISH HUSSAIN - Tabish Hussain Official,balochi_folk,0.137,0.736,0.797,0.0,0,0.11,-6.581,1,0.0875,151.474,0.887
+Zolfe Nooda'n - Kaifi Khalil,balochi_folk,0.64,0.738,0.282,0.000284,3,0.19,-14.062,1,0.0313,97.564,0.63
+Liqa - Mubarak Qazi | Official Video - Naeem Dilpul,balochi_folk,0.603,0.743,0.505,0.00383,8,0.113,-11.481,1,0.0258,95.039,0.524
+A Kind of Magic - Karakoram,balochi_folk,0.0557,0.661,0.677,0.000798,9,0.136,-5.828,1,0.0467,120.01,0.472
+Jan-o-Jigar - Abdul Ghani Irani,balochi_folk,0.722,0.595,0.363,0.0,7,0.394,-16.448,1,0.045,137.712,0.923
+Kana Yaari - Kaifi Khalil,balochi_folk,0.103,0.841,0.536,0.0,10,0.185,-6.866,0,0.118,96.013,0.582
+Allah Hoo Allah - Sain Zahoor Ahmed,balochi_folk,0.573,0.6,0.952,0.19,6,0.261,-2.611,1,0.0459,149.074,0.599
+Dile Gapan Ale Ale Balochi - Suriya Soomro,balochi_folk,0.0334,0.65,0.902,0.712,7,0.0707,-12.818,1,0.075,164.836,0.857
+Bya K Bacheke Abdaale - Kaifi Khalil,balochi_folk,0.0882,0.754,0.505,0.000142,6,0.0944,-8.288,1,0.0736,163.909,0.27
+Mor Tor Tilley Rana - Zarina Baloch,balochi_folk,0.605,0.768,0.45,1.79e-05,0,0.135,-12.665,0,0.0419,112.932,0.932
+Laddey Laddey Jo - Amina Baloch,balochi_folk,0.655,0.615,0.568,0.000582,8,0.294,-12.18,0,0.0381,115.636,0.976
+Qissa Wafa e Mashup - Kaifi Khalil,balochi_folk,0.903,0.544,0.208,0.0,4,0.097,-13.319,0,0.0384,139.854,0.178
+Purr Ka'n de Glass A - Kaifi Khalil,balochi_folk,0.684,0.633,0.77,0.000369,11,0.086,-6.091,0,0.0736,180.013,0.767
+Babi Alo Alo - Abdo Al Baloshi,balochi_folk,0.173,0.476,0.5,0.0,0,0.0215,-13.116,0,0.061,115.471,0.95
+Hamara Pakistan - Balochi Version - Akhtar Chanal Zahri,balochi_folk,0.262,0.621,0.656,0.0,10,0.223,-12.283,0,0.0516,119.966,0.543
+Allah Hu - Saieen Zahoor,balochi_folk,0.419,0.505,0.458,5.14e-06,9,0.155,-9.821,0,0.0319,147.86,0.514
+Malle Baloutchan - Saeid Shanbehzadeh,balochi_folk,0.736,0.351,0.278,0.0634,0,0.0999,-14.554,1,0.0437,199.068,0.136
+Mullah Makh Zama Na - Sardar Ali Takkar,balochi_folk,0.848,0.4,0.787,2.08e-05,7,0.455,-0.468,0,0.0323,98.357,0.281
+Mani Dost Taw Manara - SAZGIR,balochi_folk,0.664,0.782,0.449,8.21e-06,3,0.148,-8.451,0,0.143,85.007,0.34
+Beqaraar - Kaifi Khalil,balochi_folk,0.314,0.516,0.488,0.000177,7,0.239,-9.853,1,0.0601,160.163,0.443
+Minnat Madare - SAZGIR,balochi_folk,0.448,0.576,0.701,0.0,1,0.127,-9.369,1,0.0302,79.962,0.57
+Drog - Kaifi Khalil,balochi_folk,0.185,0.796,0.598,0.00154,0,0.106,-8.292,1,0.0511,94.962,0.123
+"Kaply Wala, Folk Song - Abdulrahman Surizehi",balochi_folk,0.759,0.438,0.573,0.00154,8,0.0843,-9.893,0,0.0426,128.431,0.619
+Badshahi da jahan sa krey/kala tang kala takor - Saniakhan achakzai,balochi_folk,0.429,0.467,0.652,0.0297,8,0.167,-8.119,0,0.0432,103.988,0.623
+Zemestan - Shabir Sayad,balochi_folk,0.447,0.691,0.74,5.33e-06,7,0.351,-6.237,0,0.0288,140.067,0.943
+Baanzul (Wings) - Naeem Dilpul,balochi_folk,0.57,0.359,0.548,3.16e-05,6,0.168,-5.214,1,0.033,69.484,0.244
+Dilbar Dila Bide - Kaifi Khalil,balochi_folk,0.0507,0.879,0.637,2.12e-05,7,0.0763,-7.368,1,0.0729,124.983,0.455
+Makran - Saeid Shanbehzadeh,balochi_folk,0.155,0.802,0.328,0.819,11,0.0913,-16.997,1,0.277,109.982,0.116
+Kadi Kaye - Kaifi Khalil,balochi_folk,0.861,0.545,0.214,0.0,6,0.1,-16.075,1,0.0389,149.634,0.325
+Mallo Mallo - Kaifi Khalil,balochi_folk,0.318,0.749,0.44,0.000252,1,0.0966,-9.934,1,0.167,140.034,0.449
+Laila - لیلا - Sima Bina,balochi_folk,0.823,0.681,0.627,0.23,9,0.225,-11.587,1,0.0426,141.909,0.962
+Male Baluchan - مله بلوچان - Sima Bina,balochi_folk,0.646,0.266,0.667,1.05e-05,7,0.458,-8.719,1,0.0693,184.854,0.521
+Zindagbat E Watan - Akhtar Chanal Zehri,balochi_folk,0.0632,0.666,0.81,4.42e-06,7,0.246,-8.906,1,0.102,164.988,0.597
+Baloch - Hossein Haft,balochi_folk,0.785,0.685,0.411,3.32e-05,0,0.0991,-11.246,0,0.114,166.086,0.201
+Bya K Bacheke Abdaale (Unplugged) - Kaifi Khalil,balochi_folk,0.174,0.662,0.313,2.1e-06,6,0.0904,-11.073,1,0.0796,81.96,0.196
+Ishq Dege Cheze - Islam Zemer,balochi_folk,0.858,0.646,0.243,1.05e-06,2,0.143,-14.066,1,0.0318,121.89,0.506
+Adenk - Islam Zemer,balochi_folk,0.668,0.65,0.602,0.000164,6,0.351,-12.043,1,0.0284,148.987,0.965
+Lahoti (feat.Nadir Lovely Anas Baloch & Mushal Anwar) - Dark Street,balochi_folk,0.122,0.88,0.599,0.0,7,0.0459,-7.337,1,0.365,125.926,0.874
+Washmallay - Aima Baig,balochi_folk,0.00463,0.663,0.901,0.0,4,0.281,-4.966,1,0.094,111.99,0.828
+Neke Ha Balochi - Dark Street,balochi_folk,0.342,0.909,0.886,0.0,11,0.0608,-6.282,0,0.237,113.333,0.83
+Zana Kay Ishq - Balo Baloch,balochi_folk,0.903,0.468,0.242,0.0,4,0.0895,-9.512,0,0.0306,134.707,0.284
+Baali Guraab - Unplugged - Kaifi Khalil,balochi_folk,0.852,0.618,0.357,3.36e-06,5,0.105,-12.18,1,0.0444,144.802,0.507
+Mashkat Mehrok - Faiz Muhammad Baloch,balochi_folk,0.53,0.658,0.656,0.00495,7,0.285,-6.61,1,0.164,118.194,0.882
+Chammani Ars - Kaifi Khalil,balochi_folk,0.879,0.474,0.336,1.6e-06,9,0.224,-13.256,1,0.0405,139.74,0.196
+ISHQE VATAN - Shabir Sayad,balochi_folk,0.67,0.734,0.484,6.29e-06,0,0.164,-7.356,1,0.0262,100.012,0.585
+Chincho Sharab - Kaifi Khalil,balochi_folk,0.855,0.366,0.163,0.000334,9,0.0994,-12.683,1,0.0312,146.145,0.168
+Tayi Yaad Atkagaa'n - Kaifi Khalil,balochi_folk,0.257,0.711,0.39,0.00212,9,0.0862,-12.761,0,0.0628,87.953,0.487
+EDA YAAR NE - Balo Baloch,balochi_folk,0.381,0.731,0.519,0.00865,8,0.104,-9.911,0,0.0328,130.008,0.498
+Jambari (Mudasir Baloch) - Baanzul Productions,balochi_folk,0.408,0.492,0.519,0.0,8,0.122,-6.832,1,0.108,159.834,0.603
+Nar Bait - Akhtar Chanal Zehri,balochi_folk,0.486,0.534,0.812,0.000476,11,0.229,-9.623,0,0.0664,92.046,0.859
+Nodan (Nadir Aslam Baloch) - Baanzul Productions,balochi_folk,0.9,0.638,0.358,7.74e-06,0,0.165,-8.743,1,0.0347,119.997,0.381
+Zemar | Nadir Aslam | Ameer Dost - Nadir Aslam,balochi_folk,0.855,0.54,0.442,0.000302,1,0.114,-9.353,1,0.0336,124.097,0.26
+Khair - Kaifi Khalil,balochi_folk,0.0285,0.708,0.742,0.0,11,0.298,-6.343,0,0.155,95.932,0.736
+Kahani Suno 2.0 - Kaifi Khalil,balochi_folk,0.909,0.577,0.379,0.000586,11,0.0986,-13.235,1,0.0374,139.585,0.26
+Tauseep X Urdu Mashup - Kaifi Khalil,balochi_folk,0.946,0.412,0.272,0.00156,9,0.11,-14.338,1,0.0407,169.906,0.391
+Kahani Suno - Kaifi Khalil,balochi_folk,0.203,0.62,0.585,0.0,9,0.0811,-9.01,0,0.0382,164.904,0.36
+Sher-E-Balochistan (feat. Sami Amiri) - SomeWhatSuper,balochi_folk,0.00028,0.704,0.859,0.00333,1,0.46,-3.484,1,0.163,105.007,0.348
+Kae Kasheat Anth - Arif Baloch,balochi_folk,0.0565,0.603,0.892,1.35e-05,4,0.0669,-7.786,1,0.0496,120.976,0.97
+Dotar Map Arse - Anwar Raheem,balochi_folk,0.398,0.466,0.669,0.0,7,0.121,-9.696,1,0.0562,166.268,0.93
+Aa Ke Arzani - Arif Baloch,balochi_folk,0.314,0.71,0.923,0.0174,1,0.315,-2.858,0,0.0405,110.043,0.974
+Tar Taab Maya Tahl E - Arif Baloch,balochi_folk,0.158,0.538,0.776,6.81e-05,1,0.133,-9.191,0,0.0608,120.871,0.721
+O Mani Jani - Shafi Baloch,balochi_folk,0.977,0.381,0.606,0.864,0,0.394,-10.344,1,0.151,175.624,0.92
+Ko Ko Kan Kapoot - Asmi Baloch,balochi_folk,0.787,0.447,0.423,0.687,6,0.12,-11.837,1,0.0465,170.66,0.519
+Jurmana - Kaifi Khalil,balochi_folk,0.677,0.332,0.315,0.00216,10,0.21,-16.102,1,0.043,179.863,0.132
+Ishq Ay Tai Talabh - Balo Baloch,balochi_folk,0.744,0.826,0.611,0.000141,10,0.102,-6.828,0,0.128,93.044,0.671
+"Makran Qalem Lolo, Pt, 2 - Lateefullah Bakhsh",balochi_folk,0.635,0.447,0.463,0.0,4,0.247,-5.961,1,0.216,87.744,0.199
+Zemera Sotka Sirjeme - Arif Baloch,balochi_folk,0.555,0.486,0.57,1.42e-05,6,0.219,-9.575,1,0.0524,82.551,0.965
+Sar Gir O Biya - Arif Baloch,balochi_folk,0.447,0.594,0.903,0.000785,5,0.158,-2.29,1,0.0506,80.992,0.966
+Man Ganokan Dil - Arif Baloch,balochi_folk,0.545,0.457,0.91,0.0351,0,0.149,-3.742,1,0.0439,114.066,0.868
+Mekan Par Yaat K - Arif Baloch,balochi_folk,0.307,0.837,0.878,0.0,8,0.433,-9.503,1,0.0533,112.092,0.799
+Mani Dard E Dilee - Arif Baloch,balochi_folk,0.525,0.477,0.583,0.0,6,0.3,-10.497,0,0.0533,169.721,0.972
+Lal E Jag E Zari - Arif Baloch,balochi_folk,0.423,0.719,0.674,2.01e-05,8,0.059,-9.14,1,0.042,157.089,0.981
+Seware Gari Bareg - Arif Baloch,balochi_folk,0.462,0.635,0.694,0.000507,8,0.249,-8.877,1,0.0448,80.777,0.966
+E Mahay Kane Shape - Arif Baloch,balochi_folk,0.45,0.561,0.834,0.00813,9,0.314,-4.257,1,0.0401,93.931,0.958
+Dukhtar Sar Band Tari - Aasmi Baloch,balochi_folk,0.261,0.783,0.833,0.0,6,0.139,-8.248,1,0.0552,111.321,0.965
+Dila Ra Sabar o Karar Nast - Ammar Hoseinzehi,balochi_folk,0.56,0.685,0.624,0.00394,8,0.405,-9.294,1,0.21,94.505,0.799
+Sar Batag Sahre - Noor Khan Bazinjo,balochi_folk,0.741,0.307,0.753,0.0,5,0.143,-7.767,0,0.0443,141.137,0.726
+Mashkate Mehrok - Golbang,balochi_folk,0.402,0.609,0.546,0.0,7,0.12,-9.801,1,0.0596,151.907,0.775
+Ah Dour Mai Kasaniy'e - SAZGIR,balochi_folk,0.451,0.873,0.513,0.0,1,0.0753,-5.458,1,0.0471,126.017,0.442
+Yake Domiya Gestah - Kamran Dad,balochi_folk,0.756,0.518,0.506,4.84e-05,3,0.0773,-5.646,1,0.0267,108.024,0.278
+Zaeerok Jana - SAZGIR,balochi_folk,0.516,0.623,0.201,5.77e-06,0,0.0628,-15.703,1,0.0296,80.02,0.344
+Abitk - SAZGIR,balochi_folk,0.71,0.651,0.512,3.45e-05,2,0.111,-8.989,0,0.0322,155.968,0.643
+Qurbana Abdullah Rafiq - SAZGIR,balochi_folk,0.122,0.602,0.566,0.0,8,0.0805,-8.646,1,0.102,175.981,0.59
+To Mana Chare Na - Abdul Ghani Irani,balochi_folk,0.721,0.553,0.246,0.0,3,0.089,-20.377,1,0.0872,149.875,0.92
+Ghusta Mana Gullay - Faiz Muhammad Baloch,balochi_folk,0.0315,0.818,0.568,0.00561,3,0.254,-12.772,0,0.326,152.153,0.806
+O Sabz Lo - Shafi Baloch,balochi_folk,0.854,0.524,0.613,0.00669,8,0.346,-9.445,1,0.0495,159.809,0.89
+Chencho Sharab - Shahjan Dawoodi,balochi_folk,0.294,0.441,0.689,2.72e-05,9,0.463,-13.064,1,0.0667,126.742,0.697
+Dilan Teer Bija - Shabana Noshi,balochi_folk,0.557,0.689,0.794,0.127,4,0.367,-9.944,0,0.0845,114.487,0.585
+Kadi Kay Manago Dilbar - Arif Baloch,balochi_folk,0.286,0.507,0.839,2.72e-05,5,0.0671,-8.928,1,0.0449,121.736,0.962
+Dagh Data Mani - Jarok Baloch,balochi_folk,0.234,0.613,0.596,0.0,11,0.412,-11.501,1,0.216,50.767,0.847
+O Mani Madane Dil - Jarok Baloch,balochi_folk,0.771,0.347,0.671,0.0,4,0.853,-9.256,0,0.0692,163.77,0.887
+Jazz Bandari - Saeid Shanbehzadeh,balochi_folk,0.299,0.361,0.633,0.318,0,0.0681,-9.741,1,0.0838,125.544,0.658
+Aey Naz Husne Wala - Faiz Muhammad Baloch,balochi_folk,0.753,0.55,0.786,0.407,11,0.56,-5.551,1,0.208,82.629,0.82
+Kandana Pada Piya - Shafi Baloch,balochi_folk,0.909,0.582,0.65,0.000411,11,0.272,-8.32,1,0.0445,83.217,0.947
+Dost Naraz Khauda Khair - Shafi Baloch,balochi_folk,0.771,0.371,0.688,0.0776,8,0.228,-11.267,1,0.117,202.587,0.963
+Tai Husna - Shafi Baloch,balochi_folk,0.831,0.493,0.636,0.0867,6,0.306,-9.554,1,0.048,159.331,0.899
+Ma Pari Lal Tara - Noor Khan Bazinjo,balochi_folk,0.401,0.619,0.726,0.00592,1,0.206,-10.323,0,0.0384,79.155,0.969
+Polla'n Man Chara'n | پُلاں من چاراں - Mehroz Baloch,balochi_folk,0.916,0.568,0.118,8.26e-06,2,0.11,-16.233,1,0.0337,109.963,0.425
+Ji Aao - Zohaib Kazi,balochi_folk,0.323,0.7,0.8,0.0,1,0.327,-3.29,1,0.0748,119.977,0.881
+Musam Baharaye - Jarok Baloch,balochi_folk,0.297,0.599,0.534,3.13e-06,11,0.383,-9.173,1,0.136,140.552,0.734
+JANI MAN POLLE NAYA - Dijay Khalifa,balochi_folk,0.607,0.673,0.629,6.09e-06,9,0.3,-7.129,1,0.0409,96.898,0.76
+Bort Nakot - Islam Zemer,balochi_folk,0.334,0.846,0.414,0.00226,1,0.108,-11.265,0,0.0284,100.006,0.902
+Madok - Saeid Shanbehzadeh,balochi_folk,0.844,0.469,0.264,0.0,5,0.106,-14.062,1,0.0744,182.198,0.771
+Be Maana - Instrumental Version - Sohail Khurshed,balochi_folk,0.905,0.271,0.378,4.95e-05,11,0.229,-9.166,1,0.0296,150.352,0.356
+Shute Chamma Boro - Yasir Jamal,balochi_folk,0.364,0.657,0.564,0.00162,7,0.194,-14.481,1,0.0835,174.971,0.944
+Cha Pulley Dareega - Yasir Jamal,balochi_folk,0.128,0.694,0.351,0.000478,1,0.0683,-21.666,1,0.071,100.753,0.527
+Jani Darya Darya Jangal - Arif Baloch,balochi_folk,0.604,0.639,0.643,0.000119,3,0.271,-8.282,1,0.0318,105.705,0.768
+Darde Cherage - Noor Khan Bazinjo,balochi_folk,0.738,0.492,0.783,7.54e-06,3,0.108,-6.508,1,0.0608,139.716,0.754
+Darde Nil Bo Zere - Noor Khan Bazinjo,balochi_folk,0.862,0.558,0.58,0.649,2,0.763,-16.099,1,0.31,172.251,0.927
+Boro Alla Tara - Abdo Al Baloshi,balochi_folk,0.502,0.68,0.744,0.0129,9,0.245,-7.391,0,0.0399,79.994,0.918
+Allay Levae Levae - Abid Raaz,balochi_folk,0.0681,0.342,0.895,0.0,10,0.113,-5.938,1,0.168,65.956,0.724
+Haloo Haloo - Ayub Mehar,balochi_folk,0.682,0.418,0.798,0.0,9,0.118,-5.707,1,0.125,132.23,0.85
+Tupag Kupag Jaba - Minhaj Mukhtar,balochi_folk,0.12,0.592,0.638,0.0287,7,0.137,-13.716,0,0.299,170.057,0.666
+KOJA - Rahmin Baloch,balochi_folk,0.546,0.647,0.335,0.0,0,0.105,-11.732,1,0.0355,124.51,0.431
+Kull Humrah Hn - Minhaj Mukhtar,balochi_folk,0.31,0.723,0.809,0.000136,4,0.296,-5.371,0,0.057,105.1,0.857
+Neyad Rangen Guman - Minhaj Mukhtar,balochi_folk,0.488,0.733,0.553,0.000147,10,0.106,-11.274,0,0.0368,150.021,0.894
+Har Nafas Gun Chaadeya - Minhaj Mukhtar,balochi_folk,0.572,0.565,0.564,0.265,5,0.0913,-6.929,1,0.028,124.922,0.728
+To Lashkar Kn Ars Navees - Minhaj Mukhtar,balochi_folk,0.932,0.411,0.558,0.0972,0,0.477,-11.127,1,0.0557,151.247,0.732
+Mani To Mehre Jamaga - Minhaj Mukhtar,balochi_folk,0.682,0.739,0.589,6.09e-06,4,0.169,-10.553,1,0.0326,123.024,0.846
+Sarbatag - Wahab Baloch,balochi_folk,0.783,0.358,0.539,0.0,2,0.119,-4.937,1,0.0341,129.759,0.483
+O Kapot Sabzen - Wahab Baloch,balochi_folk,0.566,0.438,0.588,0.0669,4,0.173,-13.064,1,0.0393,165.553,0.877
+Chancho Jalwa De - Arif Baloch,balochi_folk,0.621,0.762,0.649,9.57e-05,1,0.091,-10.021,0,0.0356,117.174,0.783
+Ahe Rzan E Pad Garch - Arif Baloch,balochi_folk,0.455,0.696,0.673,1.08e-06,6,0.127,-10.268,1,0.0363,110.129,0.937
+Estaal Zeden Malpadan - Minhaj Mukhtar,balochi_folk,0.665,0.488,0.641,0.0,10,0.0715,-9.694,0,0.0805,177.127,0.899
+Wafa R Daman Zaheer - Arif Baloch,balochi_folk,0.0884,0.526,0.78,8.39e-05,1,0.0495,-9.768,1,0.0531,175.582,0.962
+GANOOKI - Rahmin Baloch,balochi_folk,0.965,0.382,0.225,0.216,9,0.0962,-12.833,0,0.0352,118.404,0.244
+Nai Cha Deedukan Hulukkan - Minhaj Mukhtar,balochi_folk,0.516,0.682,0.493,0.0,3,0.125,-12.102,1,0.0349,127.57,0.857
+Waab O Hayal 2.O - Balo Baloch,balochi_folk,0.0939,0.721,0.721,0.000294,5,0.238,-7.478,1,0.0276,134.995,0.591
+Jha E Kar Bhnet Aser Man Cham - Arif Baloch,balochi_folk,0.446,0.739,0.572,1.34e-06,6,0.127,-10.88,1,0.0503,156.209,0.965
+Arsa Shala Mani Cham - Arif Baloch,balochi_folk,0.347,0.701,0.642,0.0,1,0.14,-11.211,1,0.0732,156.234,0.965
+Arr Nafas Gon Chaadeya - Minhaj Mukhtar,balochi_folk,0.967,0.537,0.702,0.778,8,0.0994,-10.37,0,0.0381,137.675,0.882
+Arroch Bith Tai Wadah - Minhaj Mukhtar,balochi_folk,0.684,0.422,0.963,0.0443,6,0.306,-5.029,1,0.069,141.075,0.656
+Hudaen loten Darbaen Azaba - Minhaj Mukhtar,balochi_folk,0.246,0.38,0.968,0.39,6,0.111,-5.061,1,0.0553,145.702,0.827
+Machar Dirtagen Jeega - Minhaj Mukhtar,balochi_folk,0.8,0.306,0.406,0.000786,3,0.158,-6.553,1,0.0339,65.493,0.713
+Mae Gowara Suhbe Sara - Minhaj Mukhtar,balochi_folk,0.919,0.279,0.312,1.64e-06,7,0.162,-10.956,0,0.0351,133.985,0.53
+Mn Wadaarega Ama Roche - Minhaj Mukhtar,balochi_folk,0.409,0.173,0.382,0.0169,6,0.486,-9.056,0,0.0348,141.0,0.345
+Mni Yaar Mni Katill - Minhaj Mukhtar,balochi_folk,0.0707,0.61,0.881,6.76e-05,6,0.871,-11.053,0,0.0645,94.078,0.682
+Mehlaben Haake Gon Honaana - Minhaj Mukhtar,balochi_folk,0.498,0.675,0.92,0.00457,5,0.0936,-0.101,0,0.0328,120.07,0.827
+Metage Machkedage Drohape - Minhaj Mukhtar,balochi_folk,0.982,0.212,0.135,0.0113,5,0.094,-18.091,0,0.0365,73.6,0.321
+Na Yatke Shapi Yad - Minhaj Mukhtar,balochi_folk,0.828,0.364,0.568,0.00372,2,0.44,-10.281,0,0.0394,150.975,0.445
+Naike Nind O Niyaad - Minhaj Mukhtar,balochi_folk,0.819,0.596,0.969,0.414,3,0.0695,-4.955,0,0.0595,113.359,0.96
