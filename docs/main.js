@@ -974,27 +974,70 @@ function drawZoom() {
 	ctx.font = '500 16px "Alegreya Sans", sans-serif';
 	ctx.fillText('balochi folk · held by its six closest sounds', W * 0.5, H - 92);
 	ctx.font = '500 16px "Alegreya Sans", sans-serif';
-	for (const h of z.m.holders) {
-		if (!h.sewn) continue;
+
+	// Build each label's geometry first, then push overlapping labels apart
+	// vertically before drawing — angle-only placement can put two holders'
+	// text boxes on top of each other when they sit close together.
+	const LINE_H = 18;
+	const labels = z.m.holders.filter((h) => h.sewn).map((h) => {
 		const a = Math.atan2(h.y - z.m.y, h.x - z.m.x);
+		const anchorX = sx(h.x) + Math.cos(a) * 9;
+		const anchorY = sy(h.y) + Math.sin(a) * 9;
 		const lx = sx(h.x) + Math.cos(a) * 38;
 		const ly = sy(h.y) + Math.sin(a) * 38;
 		const right = Math.cos(a) >= 0;
-		ctx.textAlign = right ? 'left' : 'right';
+		let name = h.w.n;
+		if (name.length > 38) name = name.slice(0, 37) + '…';
+		const nameLine = `${h.rank + 1} · ${name}`;
+		const genreLabel = (GENRE_NAMES[h.w.g] || h.w.g).toLowerCase();
+		const pctLabel = h.score != null ? ` · ${Math.round(h.score * 100)}% match` : '';
+		const genreLine = genreLabel + pctLabel;
+		const width = Math.max(ctx.measureText(nameLine).width, ctx.measureText(genreLine).width);
+		return {
+			h, anchorX, anchorY, right, nameLine, genreLine, col: h.w.col,
+			ly,
+			top: ly - LINE_H * 0.75,
+			bottom: ly + LINE_H * 1.4,
+			left: right ? lx : lx - width,
+			right2: right ? lx + width : lx,
+			lx
+		};
+	});
+
+	for (let pass = 0; pass < 6; pass++) {
+		let moved = false;
+		for (let i = 0; i < labels.length; i++) {
+			for (let j = i + 1; j < labels.length; j++) {
+				const A = labels[i], B = labels[j];
+				const xOverlap = A.left < B.right2 && B.left < A.right2;
+				if (!xOverlap) continue;
+				const yGap = LINE_H * 2.2;
+				const dist = B.ly - A.ly;
+				const overlap = yGap - Math.abs(dist);
+				if (overlap > 0) {
+					const push = overlap / 2 + 0.5;
+					const dir = dist >= 0 ? 1 : -1;
+					A.ly -= push * dir; A.top -= push * dir; A.bottom -= push * dir;
+					B.ly += push * dir; B.top += push * dir; B.bottom += push * dir;
+					moved = true;
+				}
+			}
+		}
+		if (!moved) break;
+	}
+
+	for (const l of labels) {
+		ctx.textAlign = l.right ? 'left' : 'right';
 		ctx.strokeStyle = 'rgba(233,223,199,0.35)';
 		ctx.lineWidth = 1;
 		ctx.beginPath();
-		ctx.moveTo(sx(h.x) + Math.cos(a) * 9, sy(h.y) + Math.sin(a) * 9);
-		ctx.lineTo(lx - Math.cos(a) * 6, ly - Math.sin(a) * 6);
+		ctx.moveTo(l.anchorX, l.anchorY);
+		ctx.lineTo(l.right ? l.lx - 6 : l.lx + 6, l.ly);
 		ctx.stroke();
 		ctx.fillStyle = '#e9dfc7';
-		let name = h.w.n;
-		if (name.length > 38) name = name.slice(0, 37) + '…';
-		ctx.fillText(`${h.rank + 1} · ${name}`, lx, ly);
-		ctx.fillStyle = h.w.col;
-		const genreLabel = (GENRE_NAMES[h.w.g] || h.w.g).toLowerCase();
-		const pctLabel = h.score != null ? ` · ${Math.round(h.score * 100)}% match` : '';
-		ctx.fillText(genreLabel + pctLabel, lx, ly + 18);
+		ctx.fillText(l.nameLine, l.lx, l.ly);
+		ctx.fillStyle = l.col;
+		ctx.fillText(l.genreLine, l.lx, l.ly + LINE_H);
 	}
 	ctx.globalAlpha = 1;
 	ctx.textAlign = 'left';
