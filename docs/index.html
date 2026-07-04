@@ -278,13 +278,14 @@
 			height: auto; min-height: 100%; overflow: visible; overflow-x: clip;
 			-webkit-overflow-scrolling: touch;
 		}
-		/* ── mobile story slides — rebuilt from nothing ───────────────
-		   The animation is the stage; text is a caption dock at the
-		   bottom, never fighting the busiest part of the canvas for
-		   the same screen-centre. The dock is a genuinely opaque card
-		   (not a soft falloff), so legibility never depends on what's
-		   playing behind it, with a stitched gold seam marking where
-		   "animation" ends and "caption" begins. */
+		/* ── mobile story slides — rebuilt from nothing, again ────────
+		   The animation is the stage; text sits low, never fighting the
+		   busiest part of the canvas for the same screen-centre.
+		   Legibility comes from an atmospheric graduated darkening that
+		   starts well above the text and deepens toward the bottom —
+		   no card, no border, no frosted-glass blur panel, just the
+		   cloth itself growing darker the way the existing vignette
+		   already does elsewhere in the piece. */
 		#story section {
 			min-height: 100svh; padding: 0 0 8svh; max-width: none;
 			display: flex; flex-direction: column; justify-content: flex-end;
@@ -297,21 +298,28 @@
 		   section — the fade logic measures the SECTION's position, so
 		   pinning .txt itself would stack every panel's caption at the
 		   same spot. Bottom-aligning within the flow gets the same
-		   "caption dock" look without breaking that. */
+		   "low caption" look without breaking that. */
 		#story .txt {
-			width: 100%; padding: 22px 22px calc(20px + env(safe-area-inset-bottom, 0px));
-			background: linear-gradient(rgba(15,8,10,0.55), rgba(11,6,8,0.92) 46%, rgba(11,6,8,0.92));
-			backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-			border-top: 1px solid rgba(201,162,75,0.35);
+			width: 100%; padding: 24px 22px calc(20px + env(safe-area-inset-bottom, 0px));
+			position: relative; isolation: isolate;
 		}
-		#story .txt::before { content: none; }
+		#story .txt::before {
+			content: ''; position: absolute; z-index: -1; pointer-events: none;
+			left: -22px; right: -22px; bottom: -20px; top: -36vh;
+			background: linear-gradient(to bottom,
+				transparent, rgba(9,4,6,0.5) 48%, rgba(8,3,5,0.86) 78%, rgba(8,3,5,0.9));
+		}
 		.ikicker { font-size: 11px; letter-spacing: 0.12em; margin-bottom: 10px; }
 		.ititle {
 			width: 100%; margin-bottom: 10px;
 			font-size: clamp(30px, 8.6vw, 38px); line-height: 1.22;
+			text-shadow: 0 3px 18px rgba(3,0,1,0.85), 0 1px 3px rgba(3,0,1,0.8);
 		}
 		.urdu-inline { font-size: 22px; margin-top: 0; }
-		.ibody { font-size: 16.5px; line-height: 1.6; max-width: 33ch; color: #d8c9ac; }
+		.ibody {
+			font-size: 16.5px; line-height: 1.6; max-width: 33ch; color: #d8c9ac;
+			text-shadow: 0 2px 10px rgba(3,0,1,0.75);
+		}
 
 		.interlude-sticky {
 			height: 100svh; min-height: 0; padding: 9svh 24px 15svh;
@@ -320,9 +328,7 @@
 		.interlude-kicker { font-size: 12px; margin-bottom: 18px; }
 		.interlude-primary {
 			max-width: 13ch; min-height: 3em; font-size: clamp(32px, 10vw, 46px);
-			padding: 14px 22px;
-			background: rgba(11,6,8,0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-			border-radius: 4px; border: 1px solid rgba(201,162,75,0.22);
+			text-shadow: 0 4px 20px rgba(0,0,0,0.75), 0 2px 8px rgba(0,0,0,0.7);
 		}
 		.interlude-ticks i { width: 16px; }
 		.interlude-instruction { font-size: 11px; }
@@ -468,6 +474,6 @@
 		<button id="iskip">skip to the cloth →</button>
 	</div>
 
-	<script src="main.js?v=17"></script>
+	<script src="main.js?v=18"></script>
 </body>
 </html>

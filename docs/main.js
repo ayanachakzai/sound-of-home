@@ -25,6 +25,10 @@ const legendScrimEl = document.getElementById('legend-scrim');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const hasHover = window.matchMedia('(hover: hover)').matches;
 let tapTipTimer = null;
+// On mobile a drag only "counts" as pulling the thread once it's shown
+// real sideways intent — this gates the needle so it doesn't appear
+// during the first ambiguous pixels of what turns out to be a scroll.
+let sewGestureActive = false;
 
 // ── Mobile "tapestry" scroll space ───────────────────────────────────
 // On mobile the finished cloth is taller than one screen — mirrors get a
@@ -789,6 +793,24 @@ function drawMirror(g, m, alpha = 1) {
 		i ? g.lineTo(Math.cos(a) * m.r, Math.sin(a) * m.r) : g.moveTo(m.r, 0);
 	}
 	g.closePath(); g.stroke();
+
+	// Real shisha work has no bare glass edge — the mirror is held by
+	// thread wound tightly around its own rim before the setting even
+	// begins. That wrapped bezel is what actually reads as "detailed" up
+	// close, not a thicker single outline.
+	const wraps = Math.max(10, Math.round(m.r * 1.15));
+	g.lineCap = 'round';
+	for (let i = 0; i < wraps; i++) {
+		const a = (i / wraps) * Math.PI * 2;
+		const a2 = a + (Math.PI * 2) / wraps * 0.62;
+		const rIn = m.r + 0.5, rOut = m.r + 2.1 * weight;
+		g.strokeStyle = i % 2 ? 'rgba(233,196,90,0.85)' : 'rgba(168,124,50,0.8)';
+		g.lineWidth = 1.15 * weight;
+		g.beginPath();
+		g.moveTo(Math.cos(a) * rIn, Math.sin(a) * rIn);
+		g.lineTo(Math.cos(a2) * rOut, Math.sin(a2) * rOut);
+		g.stroke();
+	}
 	g.restore();
 }
 
@@ -902,6 +924,7 @@ canvas.addEventListener('pointerdown', (e) => {
 	downAt = { x: e.clientX, y: e.clientY, moved: 0 };
 	if (!lastStitch) lastStitch = { x: e.clientX, y: toContentY(e.clientY) };
 	carry = 0;
+	sewGestureActive = !mobileClothMode;
 	hovered = null;
 	tip.style.display = 'none';
 });
@@ -912,12 +935,21 @@ window.addEventListener('pointermove', (e) => {
 	const nx = e.clientX, ny = e.clientY;
 	const dx = nx - pointer.x, dy = ny - pointer.y;
 	if (dx || dy) pointer.ang = Math.atan2(dy, dx);
-	// On mobile a drag on the cloth is how you scroll the tapestry, so it
-	// can't also mean "pull the thread" — sewing there happens by tapping
-	// instead (see pointerup). Desktop keeps the original drag-to-stitch.
-	if (pointer.down && !done && !zoom && !mobileClothMode) {
+	// touch-action: pan-y hands a vertical swipe to native scroll but still
+	// lets JS see horizontal movement, so "pull the thread" survives on
+	// mobile without fighting the scroll gesture: only sideways motion
+	// feeds the stitch count there, so a vertical swipe (dx ≈ 0) never
+	// sews by accident, and a real diagonal/horizontal pull still does.
+	const sewDist = mobileClothMode ? Math.abs(dx) : Math.hypot(dx, dy);
+	if (mobileClothMode && !sewGestureActive && downAt) {
+		// commit to "this is a thread pull" only once sideways travel
+		// from the touch start clearly outweighs vertical travel
+		const totalDx = Math.abs(nx - downAt.x), totalDy = Math.abs(ny - downAt.y);
+		if (totalDx > 10 && totalDx > totalDy * 1.4) sewGestureActive = true;
+	}
+	if (pointer.down && !done && !zoom && (!mobileClothMode || sewGestureActive)) {
 		downAt.moved += Math.hypot(dx, dy);
-		carry += Math.hypot(dx, dy);
+		carry += sewDist;
 		while (carry >= STITCH_LEN) {
 			carry -= STITCH_LEN;
 			layStitch(nx, ny, pointer.ang);
@@ -1331,7 +1363,7 @@ function frame() {
 	// never freeze at a stale last-touched point. On mobile a drag is a
 	// scroll now, not a pulled thread, so the needle never appears there —
 	// without this it stretched a thread across the whole screen on scroll.
-	const showNeedle = pointer.x > 0 && (hasHover || (pointer.down && !mobileClothMode));
+	const showNeedle = pointer.x > 0 && (hasHover || (pointer.down && sewGestureActive));
 	if (lastStitch && !done && showNeedle) {
 		const lsy = toScreenY(lastStitch.y);
 		const ex = pointer.x - Math.cos(pointer.ang) * 22;
@@ -1379,7 +1411,7 @@ function resize() {
 		mobileClothMode ? canvasContentH + 'px' : '0px';
 	document.body.classList.toggle('mobile-cloth', mobileClothMode);
 	if (mobileClothMode && !done && !defaultHint.startsWith('Tap the cloth')) {
-		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Tap the cloth to sew a few in, scroll to see the rest of the tapestry.';
+		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Drag sideways to pull the thread, tap to sew a few in, scroll up and down to see the rest of the tapestry.';
 		if (!focusGenre) hintEl.textContent = defaultHint;
 	}
 	bgBase = document.createElement('canvas');
