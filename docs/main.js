@@ -228,17 +228,26 @@ function drawStoryStitch(g, x, y, ang, col, alpha, len = 6) {
 // ── Story stages ────────────────────────────────────────────────────
 function drawStory(p) {
 	ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+	const portrait = isPortraitStage();
 	ambientPointer.x += (ambientPointer.tx - ambientPointer.x) * 0.035;
 	ambientPointer.y += (ambientPointer.ty - ambientPointer.y) * 0.035;
-	const driftX = Math.sin(p * 0.78) * W * 0.018 + Math.sin(clothTime * 0.24) * 3 + ambientPointer.x * 18;
-	const driftY = Math.cos(p * 0.62) * H * 0.018 + Math.cos(clothTime * 0.19) * 2 + ambientPointer.y * 14;
-	const clothScale = 1.045 + Math.sin(p * 0.7) * 0.012 + Math.sin(clothTime * 0.16) * 0.0025;
-	ctx.save();
-	ctx.translate(W * 0.5 + driftX, H * 0.5 + driftY);
-	ctx.rotate(Math.sin(p * 0.45) * 0.008);
-	ctx.scale(clothScale, clothScale);
-	ctx.drawImage(bgBase, -W * 0.5, -H * 0.5, W, H);
-	ctx.restore();
+	// Portrait draws the cloth 1:1, no drift/scale/rotate: redrawing a
+	// raster through a fractional transform every frame resamples it
+	// continuously, which is exactly the persistent soft/"low quality"
+	// look on phones. Desktop keeps its slow breathing drift untouched.
+	if (portrait) {
+		ctx.drawImage(bgBase, 0, 0, W, H);
+	} else {
+		const driftX = Math.sin(p * 0.78) * W * 0.018 + Math.sin(clothTime * 0.24) * 3 + ambientPointer.x * 18;
+		const driftY = Math.cos(p * 0.62) * H * 0.018 + Math.cos(clothTime * 0.19) * 2 + ambientPointer.y * 14;
+		const clothScale = 1.045 + Math.sin(p * 0.7) * 0.012 + Math.sin(clothTime * 0.16) * 0.0025;
+		ctx.save();
+		ctx.translate(W * 0.5 + driftX, H * 0.5 + driftY);
+		ctx.rotate(Math.sin(p * 0.45) * 0.008);
+		ctx.scale(clothScale, clothScale);
+		ctx.drawImage(bgBase, -W * 0.5, -H * 0.5, W, H);
+		ctx.restore();
+	}
 	const s = Math.min(Math.floor(p), 5);
 	const t = clamp01(p - s);
 	storyTime += 1 / 60;
@@ -247,8 +256,12 @@ function drawStory(p) {
 	const fns = [storyWelcome, storyGather, storyMethod, storyProblems, storyEthics, storyTrace];
 	const FADE = 0.22;
 	ctx.save();
-	ctx.translate(driftX * 0.34, driftY * 0.34);
-	ctx.rotate(Math.sin(p * 0.5) * -0.003);
+	if (!portrait) {
+		const driftX = Math.sin(p * 0.78) * W * 0.018 + Math.sin(clothTime * 0.24) * 3 + ambientPointer.x * 18;
+		const driftY = Math.cos(p * 0.62) * H * 0.018 + Math.cos(clothTime * 0.19) * 2 + ambientPointer.y * 14;
+		ctx.translate(driftX * 0.34, driftY * 0.34);
+		ctx.rotate(Math.sin(p * 0.5) * -0.003);
+	}
 	if (s > 0 && t < FADE) {
 		stageAlpha = 1 - t / FADE;
 		ctx.globalAlpha = stageAlpha;
@@ -261,6 +274,25 @@ function drawStory(p) {
 	ctx.globalAlpha = 1;
 	stageAlpha = 1;
 	ctx.restore();
+
+	// Portrait slide scrims live on the canvas, fixed to the screen — the
+	// old DOM scrims travelled with each scrolling section, so their box
+	// edges swept across the viewport as visible hard lines between
+	// slides. Here they never move, and both ends resolve to true zero.
+	if (portrait) {
+		const top = ctx.createLinearGradient(0, 0, 0, H * 0.34);
+		top.addColorStop(0, 'rgba(8,3,5,0.85)');
+		top.addColorStop(0.6, 'rgba(9,4,6,0.4)');
+		top.addColorStop(1, 'rgba(9,4,6,0)');
+		ctx.fillStyle = top;
+		ctx.fillRect(0, 0, W, H * 0.34);
+		const bot = ctx.createLinearGradient(0, H * 0.52, 0, H);
+		bot.addColorStop(0, 'rgba(8,3,5,0)');
+		bot.addColorStop(0.55, 'rgba(8,3,5,0.55)');
+		bot.addColorStop(1, 'rgba(8,3,5,0.92)');
+		ctx.fillStyle = bot;
+		ctx.fillRect(0, H * 0.52, W, H * 0.48);
+	}
 }
 let stageAlpha = 1;
 
@@ -502,11 +534,15 @@ function updateStoryDom(p) {
 			continue;
 		}
 		const { txt, kicker, title, body } = sec._storyEls;
-		const d = (r.top + Math.min(r.height, H) / 2 - H / 2) / H; // signed distance
-		const vis = clamp01(1.25 - Math.abs(d) * 1.9);
+		let d = (r.top + Math.min(r.height, H) / 2 - H / 2) / H; // signed distance
+		const portrait = W < 720;
+		// The last slide has extra scroll runway below it (the handoff into
+		// the reveal), so on its way "past centre" there is no next slide to
+		// make room for — without this it faded away while still being read.
+		if (sec === storySections[storySections.length - 1] && d < 0) d = 0;
+		const vis = clamp01(1.25 - Math.abs(d) * (portrait ? 1.5 : 1.9));
 		const bodyVis = clamp01((vis - 0.12) / 0.88);
 		const direction = d < 0 ? -1 : 1;
-		const portrait = W < 720;
 		txt.style.opacity = vis;
 		txt.style.setProperty('--vis', vis.toFixed(3));
 		if (portrait) {
@@ -925,7 +961,9 @@ function sewMirror(m, staggered) {
 		staggered ? setTimeout(place, 90 + k * 70) : place();
 	});
 	sewnEl.textContent = sewnCount;
-	if (sewnCount >= 24 && queue.length && !autoTimer) finishBtn.style.display = 'block';
+	// On mobile the escape hatch is available immediately — gating it on
+	// 24 sewn stranded anyone whose gestures weren't landing at 14/213.
+	if ((sewnCount >= 24 || mobileClothMode) && queue.length && !autoTimer) finishBtn.style.display = 'block';
 	if (!queue.length && !done) {
 		done = true;
 		finishBtn.style.display = 'none';
@@ -998,7 +1036,9 @@ window.addEventListener('pointerup', (e) => {
 	if (introActive || revealActive) { pointer.down = false; return; }
 	const wasDown = pointer.down;
 	pointer.down = false;
-	if (!wasDown || zoom || downAt.moved > 6) return;
+	sewGestureActive = false;
+	// a real thumb wobbles a few px even on a deliberate tap
+	if (!wasDown || zoom || downAt.moved > 12) return;
 	const tapContentY = toContentY(e.clientY);
 	for (const m of mirrors) {
 		if (!m.sewn) continue;
@@ -1014,13 +1054,30 @@ window.addEventListener('pointerup', (e) => {
 		}
 	}
 	// On a touch device a tap never hovers, so a stitch's info would
-	// otherwise be permanently unreachable — show it briefly on tap instead.
-	// (Tap deliberately does NOT sew: revealing is the thread-pull gesture.)
+	// otherwise be permanently unreachable — show it on tap instead.
 	if (!hasHover) {
 		hover(e.clientX, e.clientY);
 		clearTimeout(tapTipTimer);
-		if (hovered) tapTipTimer = setTimeout(() => { hovered = null; tip.style.display = 'none'; }, 3800);
+		if (hovered) {
+			tapTipTimer = setTimeout(() => { hovered = null; tip.style.display = 'none'; }, 3800);
+			return;
+		}
 	}
+	// Tapping bare cloth sews the next few mirrors. The horizontal thread
+	// pull is the richer gesture, but it must never be the only one — if
+	// it fails on any device or is simply never discovered, tapping still
+	// carries the visitor forward instead of stranding them.
+	if (mobileClothMode && !done && queue.length) {
+		let batch = 0;
+		while (batch < 4 && queue.length) { sewMirror(queue.shift(), true); batch++; }
+	}
+});
+window.addEventListener('pointercancel', () => {
+	// The browser can claim a touch mid-gesture (e.g. it becomes a native
+	// scroll); without this the piece thought the finger was still down.
+	pointer.down = false;
+	sewGestureActive = false;
+	carry = 0;
 });
 window.addEventListener('keydown', (e) => {
 	if (e.key === 'Escape' && zoom) zoom.closing = true;
@@ -1465,8 +1522,8 @@ function resize() {
 	document.getElementById('cloth-spacer').style.height =
 		mobileClothMode ? canvasContentH + 'px' : '0px';
 	document.body.classList.toggle('mobile-cloth', mobileClothMode);
-	if (mobileClothMode && !done && !defaultHint.startsWith('Tap the cloth')) {
-		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Pull the thread sideways to sew, and scroll to travel the tapestry.';
+	if (mobileClothMode && !done && !defaultHint.startsWith('In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Tap')) {
+		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Tap the cloth or pull the thread sideways to sew, and scroll to travel the tapestry.';
 		if (!focusGenre) hintEl.textContent = defaultHint;
 	}
 	bgBase = document.createElement('canvas');

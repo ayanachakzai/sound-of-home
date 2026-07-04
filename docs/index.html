@@ -301,18 +301,12 @@
 			padding: calc(20px + env(safe-area-inset-top, 0px)) 24px calc(72px + env(safe-area-inset-bottom, 0px));
 			position: relative; isolation: isolate;
 		}
-		#story .txt::before {
-			content: ''; position: absolute; z-index: -1; pointer-events: none;
-			left: 0; right: 0; top: 0; height: 34vh;
-			background: linear-gradient(to bottom,
-				rgba(8,3,5,0.88), rgba(9,4,6,0.55) 55%, transparent);
-		}
-		#story .txt::after {
-			content: ''; position: absolute; z-index: -1; pointer-events: none;
-			left: 0; right: 0; bottom: 0; height: 44vh;
-			background: linear-gradient(to top,
-				rgba(8,3,5,0.92) 26%, rgba(9,4,6,0.55) 62%, transparent);
-		}
+		/* No DOM scrims here: they scrolled with each section, so their
+		   rectangle edges swept across the screen as hard dark lines
+		   during slide changes. The portrait scrims are drawn on the
+		   canvas instead, fixed to the viewport (see drawStory). */
+		#story .txt::before { content: none; }
+		#story .txt::after { content: none; }
 		.ikicker { font-size: 12px; letter-spacing: 0.14em; margin-bottom: 12px; }
 		.ititle {
 			width: 100%; margin-bottom: 0;
@@ -353,15 +347,29 @@
 		#zoomhint { top: 22px; right: 22px; font-size: 11px; }
 
 		/* ── mobile cloth chrome: overlays, not flow-stacked UI ─────── */
+		/* flex + inner margin:auto centres a short card but lets a tall
+		   one (e.g. with "the process" expanded) scroll instead of
+		   cramming its content past the viewport edges */
 		body.mobile-cloth .masthead {
 			inset: 0; top: 0; left: 0; width: 100%; height: 100%;
-			display: grid; place-items: center; padding: 15vh 26px 12vh;
+			display: flex; justify-content: center; padding: 0 26px;
+			overflow-y: auto; -webkit-overflow-scrolling: touch;
 			background: rgba(10, 5, 7, 0.86); backdrop-filter: blur(6px);
 			-webkit-backdrop-filter: blur(6px);
 			pointer-events: auto; text-align: center;
 			transition: opacity 0.6s var(--ease-thread), visibility 0s linear 0s;
 		}
-		body.mobile-cloth .masthead > * { max-width: 340px; margin-inline: auto; }
+		body.mobile-cloth .masthead > * {
+			max-width: 340px; margin: auto;
+			padding: max(8vh, calc(24px + env(safe-area-inset-top, 0px))) 0 max(7vh, 28px);
+		}
+		/* while the intro card is up, it owns the screen — the counter
+		   pill, legend button and finish link wait underneath it */
+		body.mobile-cloth:not(.masthead-closed) .counter,
+		body.mobile-cloth:not(.masthead-closed) #legend-toggle,
+		body.mobile-cloth:not(.masthead-closed) #finish {
+			opacity: 0; visibility: hidden; pointer-events: none;
+		}
 		body.mobile-cloth .masthead h1 { font-size: clamp(38px, 11vw, 50px); line-height: 1.28; }
 		body.mobile-cloth .masthead .sub { font-size: 16.5px; line-height: 1.6; }
 		body.mobile-cloth .masthead .urdu { justify-content: center; }
@@ -422,11 +430,18 @@
 			backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 			display: flex; align-items: center; gap: 10px;
 		}
+		/* its own floating pill, centred above the corner chrome —
+		   `position: static` here previously threw it into document flow */
 		body.mobile-cloth #finish {
-			position: static; padding: 0; border: none; font-size: 12px;
-			border-bottom: 1px solid rgba(201,162,75,.6);
+			position: fixed; left: 50%; transform: translateX(-50%);
+			bottom: calc(74px + env(safe-area-inset-bottom, 0px)); right: auto;
+			background: rgba(20,11,14,.78); border: 1px solid rgba(201,162,75,.45);
+			border-radius: 99px; padding: 12px 20px; font-size: 12px;
+			backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+			z-index: 8;
 		}
 		body.zoom-mode.mobile-cloth .counter,
+		body.zoom-mode.mobile-cloth #finish,
 		body.zoom-mode.mobile-cloth #legend-toggle { opacity: 0; visibility: hidden; pointer-events: none; }
 	}
 	@media (prefers-reduced-motion: reduce) {
@@ -483,6 +498,6 @@
 		<button id="iskip">skip to the cloth →</button>
 	</div>
 
-	<script src="main.js?v=19"></script>
+	<script src="main.js?v=20"></script>
 </body>
 </html>
