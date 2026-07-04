@@ -278,21 +278,59 @@
 			height: auto; min-height: 100%; overflow: visible; overflow-x: clip;
 			-webkit-overflow-scrolling: touch;
 		}
-		#story section { min-height: 108svh; padding: 0 22px; max-width: none; }
-		#story section:last-child { min-height: 138svh; padding-top: 30vh; }
-		/* A mouse-wheel screen-height of scroll covers far more physical
-		   swipe effort on a phone — the same vh value that feels brisk on
-		   desktop drags on mobile, so the interludes get a shorter reel. */
-		#story section.story-interlude { min-height: 265svh; padding: 0; }
-		.interlude-sticky { height: 100svh; min-height: 0; padding: 10svh 22px 16svh; }
-		.interlude-primary { max-width: 12ch; min-height: 3.4em; font-size: clamp(38px, 11vw, 58px); }
-		.interlude-kicker { font-size: 13px; }
-		.interlude-ticks i { width: 18px; }
-		#story .txt { width: 100%; padding: 18px 4px; }
-		.ititle { width: 100%; margin-bottom: 12px; font-size: clamp(39px, 11vw, 55px); line-height: 1.35; }
-		.urdu-inline { font-size: 27px; }
-		.ibody { font-size: 17px; line-height: 1.62; max-width: 36ch; }
-		#storybar { padding: 14px 18px 18px; gap: 12px; }
+		/* ── mobile story slides — rebuilt from nothing ───────────────
+		   The animation is the stage; text is a caption dock at the
+		   bottom, never fighting the busiest part of the canvas for
+		   the same screen-centre. The dock is a genuinely opaque card
+		   (not a soft falloff), so legibility never depends on what's
+		   playing behind it, with a stitched gold seam marking where
+		   "animation" ends and "caption" begins. */
+		#story section {
+			min-height: 100svh; padding: 0 0 8svh; max-width: none;
+			display: flex; flex-direction: column; justify-content: flex-end;
+			position: relative;
+		}
+		#story section:last-child { min-height: 132svh; }
+		#story section.story-interlude { min-height: 240svh; padding: 0; }
+
+		/* Text stays a normal block inside its own (still scrolling)
+		   section — the fade logic measures the SECTION's position, so
+		   pinning .txt itself would stack every panel's caption at the
+		   same spot. Bottom-aligning within the flow gets the same
+		   "caption dock" look without breaking that. */
+		#story .txt {
+			width: 100%; padding: 22px 22px calc(20px + env(safe-area-inset-bottom, 0px));
+			background: linear-gradient(rgba(15,8,10,0.55), rgba(11,6,8,0.92) 46%, rgba(11,6,8,0.92));
+			backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+			border-top: 1px solid rgba(201,162,75,0.35);
+		}
+		#story .txt::before { content: none; }
+		.ikicker { font-size: 11px; letter-spacing: 0.12em; margin-bottom: 10px; }
+		.ititle {
+			width: 100%; margin-bottom: 10px;
+			font-size: clamp(30px, 8.6vw, 38px); line-height: 1.22;
+		}
+		.urdu-inline { font-size: 22px; margin-top: 0; }
+		.ibody { font-size: 16.5px; line-height: 1.6; max-width: 33ch; color: #d8c9ac; }
+
+		.interlude-sticky {
+			height: 100svh; min-height: 0; padding: 9svh 24px 15svh;
+			justify-items: center;
+		}
+		.interlude-kicker { font-size: 12px; margin-bottom: 18px; }
+		.interlude-primary {
+			max-width: 13ch; min-height: 3em; font-size: clamp(32px, 10vw, 46px);
+			padding: 14px 22px;
+			background: rgba(11,6,8,0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+			border-radius: 4px; border: 1px solid rgba(201,162,75,0.22);
+		}
+		.interlude-ticks i { width: 16px; }
+		.interlude-instruction { font-size: 11px; }
+
+		#storybar {
+			padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+			gap: 12px; z-index: 27;
+		}
 		#iskip { display: none; }
 		.reveal-card { padding: 38px 24px; }
 		.reveal-card h2 { font-size: clamp(42px, 12vw, 62px); line-height: 1.25; }
