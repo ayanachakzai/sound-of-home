@@ -35,7 +35,7 @@ let sewGestureActive = false;
 // real, comfortable, fixed size and the page scrolls natively to explore
 // it, the same way the intro story already scrolls. Desktop is untouched:
 // canvasContentH stays equal to H and scrollY stays 0 there always.
-const MOBILE_CELL = 56; // px per mirror cell in the scrollable mobile tapestry
+const MOBILE_CELL = 66; // px per mirror cell in the scrollable mobile tapestry
 let canvasContentH = 0;
 let scrollY = 0;
 let mobileClothMode = false;
@@ -174,10 +174,21 @@ const STORY_SEQUENCE = [
 ];
 
 // ── Story helpers ───────────────────────────────────────────────────
+// Portrait phones get their own compositions: the desktop stage puts the
+// heap right-of-centre beside a left text column, but the mobile slides
+// are stacked posters (title above, caption below), so the heap sits
+// centred in the clear middle band between them.
+const isPortraitStage = () => W < 720;
+function heapCentre() {
+	return isPortraitStage()
+		? { cx: W * 0.5, cy: H * 0.46, spread: Math.min(W * 0.42, H * 0.2) }
+		: { cx: W * 0.72, cy: H * 0.5, spread: H * 0.28 };
+}
 function heapPos(m) {
-	const r = H * (W < 720 ? 0.3 : 0.28) * Math.sqrt(hash(m.n + 'h'));
+	const { cx, cy, spread } = heapCentre();
+	const r = spread * Math.sqrt(hash(m.n + 'h'));
 	const a = hash(m.n + 'a') * Math.PI * 2;
-	return { x: W * (W < 720 ? 0.62 : 0.72) + Math.cos(a) * r, y: H * 0.5 + Math.sin(a) * r * 0.85 };
+	return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.85 };
 }
 function edgePos(m) {
 	const a = m.u * Math.PI * 2;
@@ -256,7 +267,9 @@ let stageAlpha = 1;
 // 0 · a running stitch sews itself across the screen
 function storyWelcome(t) {
 	const x0 = W * 0.06, x1 = W * 0.94;
-	const path = (x) => H * 0.66 + Math.sin(x * 0.005) * 26;
+	// portrait: the seam runs through the clear middle band of the poster
+	const yBase = isPortraitStage() ? H * 0.48 : H * 0.66;
+	const path = (x) => yBase + Math.sin(x * 0.005) * 26;
 	const total = 52;
 	const shown = ease(t) * total;
 	for (let i = 0; i < shown; i++) {
@@ -291,10 +304,14 @@ function storyGather(t) {
 		const e = edgePos(m), h = heapPos(m);
 		drawMini(ctx, lerp(e.x, h.x, tt), lerp(e.y, h.y, tt), 4 + tt * 3.5, tt, false);
 	}
+	const { cx, cy, spread } = heapCentre();
 	ctx.fillStyle = '#c9a24b';
-	ctx.font = '18px "Beth Ellen", cursive';
+	ctx.font = isPortraitStage() ? '16px "Beth Ellen", cursive' : '18px "Beth Ellen", cursive';
 	ctx.textAlign = 'center';
-	ctx.fillText(`${count} / 213 songs of home`, W * 0.62, H * 0.5 - H * 0.3 - 26);
+	// portrait: below the heap (above it would collide with the slide title);
+	// desktop keeps its exact original position
+	if (isPortraitStage()) ctx.fillText(`${count} / 213 songs of home`, cx, cy + spread + 36);
+	else ctx.fillText(`${count} / 213 songs of home`, W * 0.62, H * 0.5 - H * 0.3 - 26);
 	ctx.textAlign = 'left';
 }
 
@@ -316,7 +333,10 @@ function storyMethod(t) {
 		const tt = ease(clamp01(t * 1.6 - k * 0.12));
 		if (tt <= 0) return;
 		const a0 = hash(hh.w.n + 'm') * Math.PI * 2;
-		const startR = H * 0.38, endR = 26 + k * 8;
+		// portrait: pull in from just past the heap edge, not from half a
+		// landscape screen away (which flies through the title/caption)
+		const startR = isPortraitStage() ? W * 0.48 : H * 0.38;
+		const endR = 26 + k * 8;
 		const r = lerp(startR, endR, tt);
 		const x = hp.x + Math.cos(a0) * r, y = hp.y + Math.sin(a0) * r;
 		// the measuring thread
@@ -452,7 +472,8 @@ function updateStoryDom(p) {
 	const activeStep = storySections[activeStoryIndex]?.dataset.step || 1;
 	document.getElementById('storystep').textContent =
 		`${String(activeStep).padStart(2, '0')} / 06`;
-	document.getElementById('storyhint').textContent = p > 5.6 ? 'the pattern is ready' : 'scroll';
+	document.getElementById('storyhint').textContent =
+		p > 5.6 ? 'the pattern is ready' : (W < 720 ? 'swipe up' : 'scroll');
 	let dimOpacity = 0;
 	for (const sec of storySections) {
 		const r = sec.getBoundingClientRect();
@@ -485,9 +506,22 @@ function updateStoryDom(p) {
 		const vis = clamp01(1.25 - Math.abs(d) * 1.9);
 		const bodyVis = clamp01((vis - 0.12) / 0.88);
 		const direction = d < 0 ? -1 : 1;
-		const drift = direction * (1 - vis) * 70;
+		const portrait = W < 720;
 		txt.style.opacity = vis;
 		txt.style.setProperty('--vis', vis.toFixed(3));
+		if (portrait) {
+			// The mobile slide is a full-bleed poster: sideways drift or
+			// rotation would swing its edge-to-edge scrims off the sides,
+			// so its motion is vertical drift + fade + a gentler blur.
+			txt.style.filter = `blur(${((1 - vis) * 5).toFixed(2)}px) brightness(${(0.78 + vis * 0.22).toFixed(2)})`;
+			txt.style.transform = `translate3d(0, ${(d * -44).toFixed(1)}px, 0) scale(${(0.97 + vis * 0.03).toFixed(3)})`;
+			kicker.style.transform = 'none';
+			title.style.transform = `translate3d(0, ${((1 - vis) * -14).toFixed(1)}px, 0)`;
+			body.style.opacity = bodyVis;
+			body.style.transform = `translate3d(0, ${((1 - bodyVis) * 26).toFixed(1)}px, 0)`;
+			continue;
+		}
+		const drift = direction * (1 - vis) * 70;
 		txt.style.filter = `blur(${((1 - vis) * 7).toFixed(2)}px) brightness(${(0.72 + vis * 0.28).toFixed(2)})`;
 		txt.style.transform = `translate3d(${drift.toFixed(1)}px, ${(d * -76).toFixed(1)}px, 0) scale(${(0.92 + vis * 0.08).toFixed(3)}) rotate(${(direction * (1 - vis) * -1.4).toFixed(2)}deg)`;
 		kicker.style.transform = `translate3d(${((1 - vis) * -16).toFixed(1)}px, 0, 0)`;
@@ -972,22 +1006,16 @@ window.addEventListener('pointerup', (e) => {
 		if (d < (m.r + 6) ** 2) {
 			zoom = { m, t: 0, closing: false };
 			document.body.classList.add('zoom-mode');
+			zoomHint.textContent = hasHover ? 'click anywhere to close' : 'tap anywhere to close';
 			zoomHint.style.display = 'block';
 			tip.style.display = 'none';
 			hovered = null;
 			return;
 		}
 	}
-	// On mobile, tapping bare cloth (not an existing mirror or stitch) sews
-	// the next few mirrors in — the tap takes over from dragging, which is
-	// reserved for scrolling the tapestry.
-	if (mobileClothMode && !done && tapContentY > 0) {
-		let sewn = 0;
-		while (sewn < 3 && queue.length) { sewMirror(queue.shift(), true); sewn++; }
-		if (sewn) return;
-	}
 	// On a touch device a tap never hovers, so a stitch's info would
 	// otherwise be permanently unreachable — show it briefly on tap instead.
+	// (Tap deliberately does NOT sew: revealing is the thread-pull gesture.)
 	if (!hasHover) {
 		hover(e.clientX, e.clientY);
 		clearTimeout(tapTipTimer);
@@ -1115,11 +1143,14 @@ function drawZoom() {
 		return;
 	}
 	const easeT = 1 - Math.pow(1 - z.t, 3);
-	const S = 1 + easeT * (mobile ? 2.15 : 3.15);
+	// mobile: the mirror gets real presence in the upper third of the
+	// song sheet, and the cloth behind dims deeper so the sheet reads
+	// as its own screen rather than a tooltip over clutter
+	const S = 1 + easeT * (mobile ? 2.9 : 3.15);
 	const tx = W * 0.5 - z.m.x * S;
-	const ty = H * (mobile ? 0.34 : 0.47) - z.m.y * S;
+	const ty = H * (mobile ? 0.3 : 0.47) - z.m.y * S;
 
-	ctx.fillStyle = `rgba(9,4,6,${0.78 * easeT})`;
+	ctx.fillStyle = `rgba(9,4,6,${(mobile ? 0.86 : 0.78) * easeT})`;
 	ctx.fillRect(0, 0, W, H);
 	ctx.save();
 	ctx.setTransform(DPR * S, 0, 0, DPR * S, DPR * tx, DPR * ty);
@@ -1134,29 +1165,53 @@ function drawZoom() {
 	const sy = (v) => v * S + ty;
 	ctx.globalAlpha = la;
 	if (mobile) {
-		let title = z.m.n;
-		if (title.length > 38) title = title.slice(0, 37) + '…';
-		ctx.fillStyle = '#e9dfc7';
-		ctx.font = '600 22px "Alegreya Sans", sans-serif';
+		// A song sheet: the mirror holds the upper third, then a full-width
+		// titled list — each row led by a stitch swatch in its genre's
+		// thread colour, the match strength right-aligned in gold.
 		ctx.textAlign = 'center';
-		ctx.fillText(title, W * 0.5, H * 0.64);
+		ctx.fillStyle = '#e9dfc7';
+		ctx.font = '600 23px "Alegreya Sans", sans-serif';
+		const words = z.m.n.split(' ');
+		let line1 = '', line2 = '';
+		for (const w2 of words) {
+			const probe = line1 ? line1 + ' ' + w2 : w2;
+			if (!line2 && ctx.measureText(probe).width <= W - 60) line1 = probe;
+			else line2 = line2 ? line2 + ' ' + w2 : w2;
+		}
+		if (ctx.measureText(line2).width > W - 60) {
+			while (ctx.measureText(line2 + '…').width > W - 60) line2 = line2.slice(0, -1);
+			line2 += '…';
+		}
+		const titleY = H * 0.565;
+		ctx.fillText(line1, W * 0.5, titleY);
+		if (line2) ctx.fillText(line2, W * 0.5, titleY + 30);
 		ctx.fillStyle = '#c9a24b';
-		ctx.font = '500 13px "Alegreya Sans", sans-serif';
-		ctx.fillText('balochi folk · held by its six closest sounds', W * 0.5, H * 0.68);
-		ctx.font = '500 12px "Alegreya Sans", sans-serif';
+		ctx.font = '500 13.5px "Alegreya Sans", sans-serif';
+		ctx.fillText('balochi folk · held by its six closest sounds', W * 0.5, titleY + (line2 ? 58 : 30));
+
+		const listTop = H * 0.675;
 		z.m.holders.forEach((h, index) => {
 			if (!h.sewn) return;
+			const y = listTop + index * 30;
+			// stitch swatch in the genre's thread colour
+			ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+			ctx.lineWidth = 4;
+			ctx.lineCap = 'round';
+			ctx.beginPath(); ctx.moveTo(24, y - 4); ctx.lineTo(40, y - 6); ctx.stroke();
+			ctx.strokeStyle = h.w.col;
+			ctx.lineWidth = 3;
+			ctx.beginPath(); ctx.moveTo(24, y - 5); ctx.lineTo(40, y - 7); ctx.stroke();
 			let name = h.w.n;
-			if (name.length > 31) name = name.slice(0, 30) + '…';
-			const y = H * 0.735 + index * 21;
+			ctx.font = '500 15px "Alegreya Sans", sans-serif';
+			while (name.length > 4 && ctx.measureText(name).width > W - 128) name = name.slice(0, -1);
+			if (name !== h.w.n) name = name.trimEnd() + '…';
 			ctx.textAlign = 'left';
 			ctx.fillStyle = '#e9dfc7';
-			ctx.fillText(`${h.rank + 1} · ${name}`, 22, y);
+			ctx.fillText(name, 50, y);
 			ctx.textAlign = 'right';
-			ctx.fillStyle = h.w.col;
-			const genreLabel = (GENRE_NAMES[h.w.g] || h.w.g).toLowerCase();
-			const pctLabel = h.score != null ? ` · ${Math.round(h.score * 100)}%` : '';
-			ctx.fillText(genreLabel + pctLabel, W - 22, y);
+			ctx.fillStyle = '#c9a24b';
+			ctx.font = '600 14px "Alegreya Sans", sans-serif';
+			ctx.fillText(h.score != null ? `${Math.round(h.score * 100)}%` : '', W - 24, y);
 		});
 		ctx.globalAlpha = 1;
 		ctx.textAlign = 'left';
@@ -1411,7 +1466,7 @@ function resize() {
 		mobileClothMode ? canvasContentH + 'px' : '0px';
 	document.body.classList.toggle('mobile-cloth', mobileClothMode);
 	if (mobileClothMode && !done && !defaultHint.startsWith('Tap the cloth')) {
-		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Drag sideways to pull the thread, tap to sew a few in, scroll up and down to see the rest of the tapestry.';
+		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Pull the thread sideways to sew, and scroll to travel the tapestry.';
 		if (!focusGenre) hintEl.textContent = defaultHint;
 	}
 	bgBase = document.createElement('canvas');

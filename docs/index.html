@@ -278,47 +278,52 @@
 			height: auto; min-height: 100%; overflow: visible; overflow-x: clip;
 			-webkit-overflow-scrolling: touch;
 		}
-		/* ── mobile story slides — rebuilt from nothing, again ────────
-		   The animation is the stage; text sits low, never fighting the
-		   busiest part of the canvas for the same screen-centre.
-		   Legibility comes from an atmospheric graduated darkening that
-		   starts well above the text and deepens toward the bottom —
-		   no card, no border, no frosted-glass blur panel, just the
-		   cloth itself growing darker the way the existing vignette
-		   already does elsewhere in the piece. */
+		/* ── mobile story slides — full-screen posters ─────────────────
+		   Each slide is composed like a poster: kicker + title anchored
+		   at the top, the canvas animation owning the clear middle band
+		   (its portrait compositions centre there), and the caption at
+		   the bottom. Legibility comes from atmospheric top/bottom
+		   scrims — gradients in the cloth's own darkness, no cards, no
+		   borders, no frosted panels. The scrims are pseudo-elements of
+		   .txt so they inherit its scroll-driven fade automatically. */
 		#story section {
-			min-height: 100svh; padding: 0 0 8svh; max-width: none;
-			display: flex; flex-direction: column; justify-content: flex-end;
-			position: relative;
+			min-height: 100svh; padding: 0; max-width: none;
+			display: block; position: relative;
 		}
 		#story section:last-child { min-height: 132svh; }
 		#story section.story-interlude { min-height: 240svh; padding: 0; }
 
-		/* Text stays a normal block inside its own (still scrolling)
-		   section — the fade logic measures the SECTION's position, so
-		   pinning .txt itself would stack every panel's caption at the
-		   same spot. Bottom-aligning within the flow gets the same
-		   "low caption" look without breaking that. */
+		/* The poster fills its section's first viewport; the fade logic
+		   still measures the SECTION, so nothing is position: fixed. */
 		#story .txt {
-			width: 100%; padding: 24px 22px calc(20px + env(safe-area-inset-bottom, 0px));
+			min-height: 100svh; width: 100%;
+			display: flex; flex-direction: column;
+			padding: calc(20px + env(safe-area-inset-top, 0px)) 24px calc(72px + env(safe-area-inset-bottom, 0px));
 			position: relative; isolation: isolate;
 		}
 		#story .txt::before {
 			content: ''; position: absolute; z-index: -1; pointer-events: none;
-			left: -22px; right: -22px; bottom: -20px; top: -36vh;
+			left: 0; right: 0; top: 0; height: 34vh;
 			background: linear-gradient(to bottom,
-				transparent, rgba(9,4,6,0.5) 48%, rgba(8,3,5,0.86) 78%, rgba(8,3,5,0.9));
+				rgba(8,3,5,0.88), rgba(9,4,6,0.55) 55%, transparent);
 		}
-		.ikicker { font-size: 11px; letter-spacing: 0.12em; margin-bottom: 10px; }
+		#story .txt::after {
+			content: ''; position: absolute; z-index: -1; pointer-events: none;
+			left: 0; right: 0; bottom: 0; height: 44vh;
+			background: linear-gradient(to top,
+				rgba(8,3,5,0.92) 26%, rgba(9,4,6,0.55) 62%, transparent);
+		}
+		.ikicker { font-size: 12px; letter-spacing: 0.14em; margin-bottom: 12px; }
 		.ititle {
-			width: 100%; margin-bottom: 10px;
-			font-size: clamp(30px, 8.6vw, 38px); line-height: 1.22;
+			width: 100%; margin-bottom: 0;
+			font-size: clamp(32px, 9vw, 42px); line-height: 1.2;
 			text-shadow: 0 3px 18px rgba(3,0,1,0.85), 0 1px 3px rgba(3,0,1,0.8);
 		}
-		.urdu-inline { font-size: 22px; margin-top: 0; }
+		.urdu-inline { font-size: 24px; margin-top: 2px; }
 		.ibody {
-			font-size: 16.5px; line-height: 1.6; max-width: 33ch; color: #d8c9ac;
-			text-shadow: 0 2px 10px rgba(3,0,1,0.75);
+			margin-top: auto;
+			font-size: 17px; line-height: 1.62; max-width: 34ch; color: #ddd0b6;
+			text-shadow: 0 2px 12px rgba(3,0,1,0.8);
 		}
 
 		.interlude-sticky {
@@ -339,6 +344,10 @@
 		}
 		#iskip { display: none; }
 		.reveal-card { padding: 38px 24px; }
+		/* a thumb needs a much taller strike zone than a mouse cursor */
+		.reveal-seam { height: 104px; }
+		.reveal-seam::before, .reveal-seam__fill { top: 51px; }
+		.reveal-needle { top: 42px; width: 44px; height: 3px; }
 		.reveal-card h2 { font-size: clamp(42px, 12vw, 62px); line-height: 1.25; }
 		.reveal-copy { font-size: 17px; line-height: 1.55; }
 		#zoomhint { top: 22px; right: 22px; font-size: 11px; }
@@ -474,6 +483,6 @@
 		<button id="iskip">skip to the cloth →</button>
 	</div>
 
-	<script src="main.js?v=18"></script>
+	<script src="main.js?v=19"></script>
 </body>
 </html>
