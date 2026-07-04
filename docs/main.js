@@ -542,8 +542,14 @@ function openDataset() {
 		// Masthead/legend are now untransformed and at their true resting
 		// size — re-measure the grid band against their real position.
 		resize();
-		// The first mirror catches the light as the now-interactive cloth settles.
-		setTimeout(() => { if (queue.length) sewMirror(queue.shift(), true); }, 420);
+		// The first mirror catches the light as the now-interactive cloth
+		// settles. On mobile, one lone mirror against 213 chalk outlines
+		// read as sparse/unfinished rather than a deliberate beginning —
+		// start with a small worked patch instead.
+		setTimeout(() => {
+			const firstBatch = mobileClothMode ? 14 : 1;
+			for (let i = 0; i < firstBatch && queue.length; i++) sewMirror(queue.shift(), true);
+		}, 420);
 	}, 1700);
 }
 
@@ -649,9 +655,11 @@ function layoutGrid() {
 			const shift = (row % 2) * cell * 0.28;
 			m.x = ox + col * cell + cell / 2 + shift + (m.u - 0.5) * 3;
 			m.y = TOP_MARGIN + row * cell + cell / 2 + (hash(m.n + 'y') - 0.5) * 3;
-			// Kept well inside cell/2 so a mirror's setting never reaches into
-			// its neighbours' cells — the old formula overlapped by design.
-			m.r = cell * 0.16 + ((m.mir - 0.749) / 0.251) * cell * 0.045;
+			// A mirror that's small relative to its cell reads as sparse no
+			// matter how sharp the render is — sized to fill more of the
+			// cell, with the setting's fan-out pulled in to compensate so
+			// neighbours still don't overlap.
+			m.r = cell * 0.22 + ((m.mir - 0.749) / 0.251) * cell * 0.05;
 			const hasScore = m.holders[0].score != null;
 			const sMax = hasScore ? m.holders[0].score : 0;
 			const sMin = hasScore ? m.holders[K - 1].score : 0;
@@ -660,7 +668,7 @@ function layoutGrid() {
 				const closeness = hasScore
 					? (sMax - h.score) / Math.max(sMax - sMin, 1e-9)
 					: k / (K - 1);
-				const rad = m.r + 3 + closeness * cell * 0.12;
+				const rad = m.r + 3 + closeness * cell * 0.1;
 				h.x = m.x + Math.cos(a) * rad;
 				h.y = m.y + Math.sin(a) * rad;
 				h.ang = a + Math.PI / 2 + (hash(m.n + h.w.n) - 0.5) * 0.4;
@@ -760,17 +768,21 @@ function drawCloth(g, targetH = H, includeVignette = true) {
 
 // ── Marks ───────────────────────────────────────────────────────────
 function drawMirror(g, m, alpha = 1) {
+	// Cells grew for mobile legibility, but a fixed-width rim on a bigger
+	// circle reads as a thinner wireframe, not a sturdier object — scale
+	// the stroke with it so bigger mirrors read as more solid, not thinner.
+	const weight = mobileClothMode ? 1.55 : 1;
 	g.save();
 	g.globalAlpha = alpha;
 	g.translate(m.x, m.y);
 	g.rotate(m.u * Math.PI);
 	const glass = g.createRadialGradient(-m.r * 0.3, -m.r * 0.3, 0.5, 0, 0, m.r);
-	glass.addColorStop(0, 'rgba(216,228,232,0.22)');
-	glass.addColorStop(1, 'rgba(216,228,232,0.04)');
+	glass.addColorStop(0, 'rgba(216,228,232,0.26)');
+	glass.addColorStop(1, 'rgba(216,228,232,0.05)');
 	g.fillStyle = glass;
 	g.beginPath(); g.arc(0, 0, m.r - 0.5, 0, Math.PI * 2); g.fill();
 	g.strokeStyle = '#e9dfc7';
-	g.lineWidth = 1.6;
+	g.lineWidth = 1.6 * weight;
 	g.beginPath();
 	for (let i = 0; i < 8; i++) {
 		const a = (i / 8) * Math.PI * 2;
@@ -781,22 +793,23 @@ function drawMirror(g, m, alpha = 1) {
 }
 
 function drawHolder(g, h, alpha = 1) {
-	const len = 4.5 + hash(h.w.n) * 2.5;
+	const weight = mobileClothMode ? 1.4 : 1;
+	const len = (4.5 + hash(h.w.n) * 2.5) * (mobileClothMode ? 1.2 : 1);
 	g.save();
 	g.globalAlpha = alpha;
 	g.translate(h.x, h.y);
 	g.rotate(h.ang);
 	g.lineCap = 'round';
 	g.strokeStyle = 'rgba(0,0,0,0.38)';
-	g.lineWidth = 3;
+	g.lineWidth = 3 * weight;
 	g.beginPath(); g.moveTo(-len, 1); g.lineTo(len, 1); g.stroke();
 	g.strokeStyle = h.w.col;
-	g.lineWidth = 2;
+	g.lineWidth = 2 * weight;
 	g.beginPath(); g.moveTo(-len, 0); g.lineTo(len, 0); g.stroke();
 	g.restore();
 	if (h.w === closestOverall && alpha > 0.5) {
 		g.strokeStyle = 'rgba(213,174,90,0.9)';
-		g.lineWidth = 1.1;
+		g.lineWidth = 1.1 * weight;
 		g.beginPath(); g.arc(h.x, h.y, 7.5, 0, Math.PI * 2); g.stroke();
 		g.beginPath(); g.arc(h.x, h.y, 10, 0, Math.PI * 2); g.stroke();
 	}
@@ -1315,8 +1328,10 @@ function frame() {
 
 	// Touch devices have no persistent hover — only draw the trailing thread
 	// and needle while a finger (or mouse) is genuinely in contact, so they
-	// never freeze at a stale last-touched point.
-	const showNeedle = pointer.x > 0 && (hasHover || pointer.down);
+	// never freeze at a stale last-touched point. On mobile a drag is a
+	// scroll now, not a pulled thread, so the needle never appears there —
+	// without this it stretched a thread across the whole screen on scroll.
+	const showNeedle = pointer.x > 0 && (hasHover || (pointer.down && !mobileClothMode));
 	if (lastStitch && !done && showNeedle) {
 		const lsy = toScreenY(lastStitch.y);
 		const ex = pointer.x - Math.cos(pointer.ang) * 22;
