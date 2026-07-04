@@ -107,6 +107,7 @@
 	body.intro-mode #legend, body.reveal-mode #legend { transform: translateX(30px) scale(0.96); filter: blur(8px); }
 	body.intro-mode #tip { display: none; }
 	body.intro-mode #cloth { cursor: default; touch-action: pan-y; }
+	body.mobile-cloth #cloth { touch-action: pan-y; }
 	body.reveal-mode #cloth { cursor: default; filter: blur(13px) brightness(0.42); transform: scale(1.035); }
 	body.reveal-mode.reveal-opening #cloth { filter: blur(0) brightness(1); transform: scale(1); }
 	#story-dim {
@@ -277,9 +278,12 @@
 			height: auto; min-height: 100%; overflow: visible; overflow-x: clip;
 			-webkit-overflow-scrolling: touch;
 		}
-		#story section { min-height: 112svh; padding: 0 22px; max-width: none; }
-		#story section:last-child { min-height: 145svh; padding-top: 34vh; }
-		#story section.story-interlude { min-height: 390svh; padding: 0; }
+		#story section { min-height: 108svh; padding: 0 22px; max-width: none; }
+		#story section:last-child { min-height: 138svh; padding-top: 30vh; }
+		/* A mouse-wheel screen-height of scroll covers far more physical
+		   swipe effort on a phone — the same vh value that feels brisk on
+		   desktop drags on mobile, so the interludes get a shorter reel. */
+		#story section.story-interlude { min-height: 265svh; padding: 0; }
 		.interlude-sticky { height: 100svh; min-height: 0; padding: 10svh 22px 16svh; }
 		.interlude-primary { max-width: 12ch; min-height: 3.4em; font-size: clamp(38px, 11vw, 58px); }
 		.interlude-kicker { font-size: 13px; }
@@ -426,6 +430,6 @@
 		<button id="iskip">skip to the cloth →</button>
 	</div>
 
-	<script src="main.js?v=15"></script>
+	<script src="main.js?v=16"></script>
 </body>
 </html>

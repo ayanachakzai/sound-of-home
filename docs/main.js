@@ -31,7 +31,7 @@ let tapTipTimer = null;
 // real, comfortable, fixed size and the page scrolls natively to explore
 // it, the same way the intro story already scrolls. Desktop is untouched:
 // canvasContentH stays equal to H and scrollY stays 0 there always.
-const MOBILE_CELL = 40; // px per mirror cell at native scroll, before font-load re-measure
+const MOBILE_CELL = 56; // px per mirror cell in the scrollable mobile tapestry
 let canvasContentH = 0;
 let scrollY = 0;
 let mobileClothMode = false;
@@ -649,7 +649,9 @@ function layoutGrid() {
 			const shift = (row % 2) * cell * 0.28;
 			m.x = ox + col * cell + cell / 2 + shift + (m.u - 0.5) * 3;
 			m.y = TOP_MARGIN + row * cell + cell / 2 + (hash(m.n + 'y') - 0.5) * 3;
-			m.r = cell * 0.2 + ((m.mir - 0.749) / 0.251) * cell * 0.06;
+			// Kept well inside cell/2 so a mirror's setting never reaches into
+			// its neighbours' cells — the old formula overlapped by design.
+			m.r = cell * 0.16 + ((m.mir - 0.749) / 0.251) * cell * 0.045;
 			const hasScore = m.holders[0].score != null;
 			const sMax = hasScore ? m.holders[0].score : 0;
 			const sMin = hasScore ? m.holders[K - 1].score : 0;
@@ -658,7 +660,7 @@ function layoutGrid() {
 				const closeness = hasScore
 					? (sMax - h.score) / Math.max(sMax - sMin, 1e-9)
 					: k / (K - 1);
-				const rad = m.r + 3.5 + closeness * cell * 0.16;
+				const rad = m.r + 3 + closeness * cell * 0.12;
 				h.x = m.x + Math.cos(a) * rad;
 				h.y = m.y + Math.sin(a) * rad;
 				h.ang = a + Math.PI / 2 + (hash(m.n + h.w.n) - 0.5) * 0.4;
@@ -897,7 +899,10 @@ window.addEventListener('pointermove', (e) => {
 	const nx = e.clientX, ny = e.clientY;
 	const dx = nx - pointer.x, dy = ny - pointer.y;
 	if (dx || dy) pointer.ang = Math.atan2(dy, dx);
-	if (pointer.down && !done && !zoom) {
+	// On mobile a drag on the cloth is how you scroll the tapestry, so it
+	// can't also mean "pull the thread" — sewing there happens by tapping
+	// instead (see pointerup). Desktop keeps the original drag-to-stitch.
+	if (pointer.down && !done && !zoom && !mobileClothMode) {
 		downAt.moved += Math.hypot(dx, dy);
 		carry += Math.hypot(dx, dy);
 		while (carry >= STITCH_LEN) {
@@ -927,6 +932,14 @@ window.addEventListener('pointerup', (e) => {
 			hovered = null;
 			return;
 		}
+	}
+	// On mobile, tapping bare cloth (not an existing mirror or stitch) sews
+	// the next few mirrors in — the tap takes over from dragging, which is
+	// reserved for scrolling the tapestry.
+	if (mobileClothMode && !done && tapContentY > 0) {
+		let sewn = 0;
+		while (sewn < 3 && queue.length) { sewMirror(queue.shift(), true); sewn++; }
+		if (sewn) return;
 	}
 	// On a touch device a tap never hovers, so a stitch's info would
 	// otherwise be permanently unreachable — show it briefly on tap instead.
@@ -1340,13 +1353,20 @@ function frame() {
 // ── Boot ────────────────────────────────────────────────────────────
 function resize() {
 	W = window.innerWidth; H = window.innerHeight;
-	DPR = Math.min(window.devicePixelRatio || 1, W < 720 ? 1.35 : 1.75);
+	// Capping mobile DPR well below the device's real ratio was making
+	// every mirror render soft/blurry on real 2x-3x phone screens — a 2D
+	// canvas this simple is cheap enough to render at full density.
+	DPR = Math.min(window.devicePixelRatio || 1, 3);
 	canvas.width = W * DPR; canvas.height = H * DPR;
 	canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
 	layoutGrid();
 	document.getElementById('cloth-spacer').style.height =
 		mobileClothMode ? canvasContentH + 'px' : '0px';
 	document.body.classList.toggle('mobile-cloth', mobileClothMode);
+	if (mobileClothMode && !done && !defaultHint.startsWith('Tap the cloth')) {
+		defaultHint = 'In shisha embroidery, a mirror is held in place by the stitches around it. Here, every mirror carries a Balochi song. Tap the cloth to sew a few in, scroll to see the rest of the tapestry.';
+		if (!focusGenre) hintEl.textContent = defaultHint;
+	}
 	bgBase = document.createElement('canvas');
 	bgBase.width = W * DPR;
 	bgBase.height = H * DPR;
